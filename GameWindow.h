@@ -1,6 +1,7 @@
 #pragma once
 #include <QOpenGLWindow>
 #include <QOpenGLFunctions>
+#include "MeshCollection.h"
 
 class GameWindow : public QOpenGLWindow, protected QOpenGLFunctions
 {
@@ -12,4 +13,9 @@ public:
 	void resizeGL(int w, int h) override;
 	void paintGL() override;
 	void teardownGL();
+
+	MeshCollection *meshCollection;
+
+private:
+	QOpenGLShaderProgram* shaderProgram;
 };
