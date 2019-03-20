@@ -2,6 +2,7 @@
 #include <QOpenGLWindow>
 #include <QOpenGLFunctions>
 #include "MeshCollection.h"
+#include "Player.h"
 
 class GameWindow : public QOpenGLWindow, protected QOpenGLFunctions
 {
@@ -18,4 +19,5 @@ public:
 
 private:
 	QOpenGLShaderProgram* shaderProgram;
+	Player *player;
 };

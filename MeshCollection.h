@@ -10,9 +10,9 @@ class MeshCollection
 public:
 	enum class ModelType { Man };
 
-	void setShaderProgram(QOpenGLShaderProgram *shaderProgram);
+	void Initialize(QOpenGLShaderProgram *shaderProgram);
 	void InitializeModel(ModelType modelType);
-	void Draw(ModelType modelType);
+	void Draw(ModelType modelType, QMatrix4x4 transformations);
 	~MeshCollection();
 	static MeshCollection* GetInstance();
 
@@ -22,6 +22,7 @@ private:
 	Assimp::Importer importer;
 	std::map< ModelType, Mesh*> meshes;
 	QOpenGLShaderProgram* shaderProgram;
+	int modelTransformationsLoc;
 
 	void InitializeRawModel(std::string path, ModelType modelType);
 };

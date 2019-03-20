@@ -1,9 +1,10 @@
 #include "MeshCollection.h"
 #include <QDebug>
 
-void MeshCollection::setShaderProgram(QOpenGLShaderProgram *shaderProgram)
+void MeshCollection::Initialize(QOpenGLShaderProgram *shaderProgram)
 {
 	this->shaderProgram = shaderProgram;
+	modelTransformationsLoc = shaderProgram->uniformLocation("modelTransformations");
 }
 
 void MeshCollection::InitializeModel(ModelType modelType)
@@ -23,8 +24,10 @@ void MeshCollection::InitializeModel(ModelType modelType)
 	}
 }
 
-void MeshCollection::Draw(ModelType modelType)
+void MeshCollection::Draw(ModelType modelType, QMatrix4x4 transformations)
 {
+	shaderProgram->setUniformValue(modelTransformationsLoc, transformations);
+
 	if (meshes.find(modelType) != meshes.end())
 		meshes[modelType]->Draw();
 	else
@@ -39,7 +42,7 @@ MeshCollection::~MeshCollection()
 	meshes.clear();
 }
 
-MeshCollection* MeshCollection::instance = 0;
+MeshCollection* MeshCollection::instance = nullptr;
 
 MeshCollection* MeshCollection::GetInstance()
 {
