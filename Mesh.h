@@ -29,6 +29,7 @@ public:
 
 	Mesh(std::vector<Vertex> vertices,
 		std::vector<Texture> textures, QOpenGLShaderProgram* m_program);
+	~Mesh();
 
 private:
 	QOpenGLVertexArrayObject VAO;

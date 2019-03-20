@@ -8,7 +8,7 @@
 class MeshCollection
 {
 public:
-	enum class ModelType { BUNNY };
+	enum class ModelType { Man };
 
 	MeshCollection(QOpenGLShaderProgram *shaderProgram);
 	void InitializeModel(ModelType modelType);

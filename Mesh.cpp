@@ -36,3 +36,10 @@ Mesh::Mesh(std::vector<Vertex> vertices,
 	VAO.release();
 	m_program->release();
 }
+
+Mesh::~Mesh()
+{
+	VBO->destroy();
+	delete VBO;
+	delete VAOBinder;
+}

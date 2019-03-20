@@ -10,9 +10,9 @@ void MeshCollection::InitializeModel(ModelType modelType)
 {
 	switch (modelType)
 	{
-	case ModelType::BUNNY:
+	case ModelType::Man:
 		InitializeRawModel("Resources/man.fbx", modelType);
-		qDebug() << "Initialized model: BUNNY";
+		qDebug() << "Initialized model: Man";
 		break;
 	default:
 		qDebug() << "ERROR: Unknown modeType.";
@@ -31,6 +31,9 @@ void MeshCollection::Draw(ModelType modelType)
 
 MeshCollection::~MeshCollection()
 {
+	for (auto mesh : meshes)
+		delete mesh.second;
+	meshes.clear();
 }
 
 void MeshCollection::InitializeRawModel(std::string path, ModelType modelType)
