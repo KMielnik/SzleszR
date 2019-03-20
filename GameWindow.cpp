@@ -18,7 +18,8 @@ void GameWindow::initializeGL()
 	shaderProgram->link();
 	shaderProgram->bind();
 
-	meshCollection = new MeshCollection(shaderProgram);
+	meshCollection = MeshCollection::GetInstance();
+	meshCollection->setShaderProgram(shaderProgram);
 
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 	

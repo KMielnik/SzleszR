@@ -10,12 +10,15 @@ class MeshCollection
 public:
 	enum class ModelType { Man };
 
-	MeshCollection(QOpenGLShaderProgram *shaderProgram);
+	void setShaderProgram(QOpenGLShaderProgram *shaderProgram);
 	void InitializeModel(ModelType modelType);
 	void Draw(ModelType modelType);
 	~MeshCollection();
+	static MeshCollection* GetInstance();
 
 private:
+	MeshCollection() = default;
+	static MeshCollection* instance;
 	Assimp::Importer importer;
 	std::map< ModelType, Mesh*> meshes;
 	QOpenGLShaderProgram* shaderProgram;

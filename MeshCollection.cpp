@@ -1,13 +1,16 @@
 #include "MeshCollection.h"
 #include <QDebug>
 
-MeshCollection::MeshCollection(QOpenGLShaderProgram *shaderProgram)
+void MeshCollection::setShaderProgram(QOpenGLShaderProgram *shaderProgram)
 {
 	this->shaderProgram = shaderProgram;
 }
 
 void MeshCollection::InitializeModel(ModelType modelType)
 {
+	if (meshes.find(modelType) != meshes.end())
+		return;
+
 	switch (modelType)
 	{
 	case ModelType::Man:
@@ -34,6 +37,15 @@ MeshCollection::~MeshCollection()
 	for (auto mesh : meshes)
 		delete mesh.second;
 	meshes.clear();
+}
+
+MeshCollection* MeshCollection::instance = 0;
+
+MeshCollection* MeshCollection::GetInstance()
+{
+	if (!instance)
+		instance = new MeshCollection();
+	return instance;
 }
 
 void MeshCollection::InitializeRawModel(std::string path, ModelType modelType)
