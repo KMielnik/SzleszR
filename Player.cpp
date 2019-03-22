@@ -11,7 +11,6 @@ Player::Player()
 	meshCollection->InitializeModel(MeshCollection::ModelType::Man);
 
 	initialTransformation.setToIdentity();
-	position -= QVector3D(.5f, 0, 0);
 }
 
 void Player::Draw()
@@ -21,4 +20,24 @@ void Player::Draw()
 	transformations.rotate(rotation);
 
 	meshCollection->Draw(MeshCollection::ModelType::Man, transformations);
+}
+
+void Player::Move(QVector3D dPosition)
+{
+	position -= rotation*dPosition;
+}
+
+void Player::Rotate(QQuaternion quaternion)
+{
+	rotation=quaternion*rotation;
+}
+
+QVector3D Player::GetPosition()
+{
+	return position;
+}
+
+QQuaternion Player::GetRotation()
+{
+	return rotation;
 }

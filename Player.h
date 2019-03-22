@@ -10,6 +10,11 @@ public:
 	~Player() override;
 	Player();
 	void Draw() override;
+	void Move(QVector3D dPosition);
+	void Rotate(QQuaternion quaternion);
+
+	QVector3D GetPosition();
+	QQuaternion GetRotation();
 
 private:
 	QMatrix4x4 initialTransformation;

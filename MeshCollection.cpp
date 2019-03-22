@@ -62,6 +62,7 @@ void MeshCollection::InitializeRawModel(std::string path, ModelType modelType)
 	}
 
 	aiMesh* mesh = scene->mMeshes[0];
+	qDebug() << scene->mNumMaterials;
 
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
@@ -72,24 +73,24 @@ void MeshCollection::InitializeRawModel(std::string path, ModelType modelType)
 	{
 		Vertex vertex;
 		vertex.Position = QVector3D(
-			mesh->mVertices[i].x/100 +0.5,
-			mesh->mVertices[i].y/100 -0.3,
+			mesh->mVertices[i].x/100 ,
+			mesh->mVertices[i].y/100 ,
 			mesh->mVertices[i].z/100
 		);
 		vertex.Normal = QVector3D(
 			mesh->mNormals[i].x,
-			mesh->mNormals[i].y,
+			mesh->mNormals[i].y-0.5,
 			mesh->mNormals[i].z
 		);
-		if (0)
-			vertex.TexCoords = QVector2D(
-				mesh->mTextureCoords[i]->x,
-				mesh->mTextureCoords[i]->y
-			);
+
+		vertex.TexCoords = QVector2D(
+			mesh->mTextureCoords[0][i].x,
+			mesh->mTextureCoords[0][i].y
+		);
 		vertices.push_back(vertex);
 	}
 
-	//TODO textures importing
+	
 
 	meshes[modelType] = new Mesh(vertices, textures, shaderProgram);
 }

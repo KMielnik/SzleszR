@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 
 	GameWindow gameWindow;
 	gameWindow.setFormat(format);
-	gameWindow.resize(QSize(800, 600));
+	gameWindow.resize(QSize(1500, 900));
 	gameWindow.show();
 
 	return app.exec();

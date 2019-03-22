@@ -31,6 +31,10 @@ Mesh::Mesh(std::vector<Vertex> vertices,
 	m_program->enableAttributeArray(1);
 	m_program->setAttributeBuffer(1, GL_FLOAT, sizeof(QVector3D), 3, sizeof(Vertex));
 
+	//texture coordinates
+	m_program->enableAttributeArray(2);
+	m_program->setAttributeBuffer(2, GL_FLOAT, sizeof(QVector3D)*2, 2, sizeof(Vertex));
+
 	VBO->release();
 	VAOBinder->release();
 	VAO.release();
