@@ -18,13 +18,11 @@ void GameWindow::initializeGL()
 	meshCollection->Initialize(shaderProgram);
 
 	light = new Light(QVector3D(1, 1, -1), QVector3D(1, 1, 1));
-
-	cameraMatrix.setToIdentity();
-	cameraMatrix.translate(0, -1.0f, -1);
-	cameraMatrix.rotate(30, 1, 0, 0);
-	cameraMatrix.lookAt(QVector3D(0, 0, 0), QVector3D(0, 0, 0), QVector3D(0, 1, 0));
 	
 	player = new Player(MeshCollection::ModelTexture::Robot_Basic);
+
+	camera = new Camera(player, shaderProgram);
+	mousePosition = QPoint(size().width() / 2, size().height() / 2);
 	
 	marker = new Player(MeshCollection::ModelTexture::Robot_Red);
 	marker->Move(QVector3D(0.5, 0, 0));	
@@ -32,8 +30,9 @@ void GameWindow::initializeGL()
 
 void GameWindow::resizeGL(int w, int h)
 {
-	projectionMatrix.setToIdentity();
-	projectionMatrix.perspective(70.f, static_cast<float>(w) / h, 0.01f, 100.f);
+	camera->SetProjection(70.f, w, h, 0.01f, 100.f);
+	mousePosition = QPoint(w/2, h/2);
+	camera->Reset();
 }
 
 void GameWindow::paintGL()
@@ -44,21 +43,15 @@ void GameWindow::paintGL()
 	glEnable(GL_LIGHTING);
 	glShadeModel(GL_FLAT);
 
-	
-	MoveCamera();
-	cameraMatrix.setToIdentity();
 
-	cameraMatrix.lookAt(player->GetPosition()+player->GetRotation()*QVector3D(0,distance,-1), 
-		player->GetPosition() + QVector3D(0,0.8,0), 
-		QVector3D(0,1,0));
-	
+	MovePlayer();
 
 	shaderProgram->Bind();
 	SetTransformations();
 
-
 	player->Draw();
 	marker->Draw();
+
 	shaderProgram->Release();
 
 	update();
@@ -72,14 +65,13 @@ void GameWindow::teardownGL()
 
 void GameWindow::SetTransformations()
 {
-	shaderProgram->LoadProjectionMatrix(projectionMatrix);
-	shaderProgram->LoadCameraMatrix(cameraMatrix);
+	camera->Move();
 	shaderProgram->LoadLight(light);
 }
 
-void GameWindow::MoveCamera()
+void GameWindow::MovePlayer()
 {
-	float speed = 0.05f;
+	float speed = 0.1f;
 	float dx = 0;
 	if (pressedKeys[Qt::Key_A]) dx += speed;
 	if (pressedKeys[Qt::Key_D]) dx -= speed;
@@ -93,8 +85,6 @@ void GameWindow::MoveCamera()
 	if (pressedKeys[Qt::Key_E]) dy -= speed;
 
 	player->Move(QVector3D(-dx, 0, -dz));
-	//
-
 }
 
 void GameWindow::keyPressEvent(QKeyEvent* e)
@@ -109,15 +99,29 @@ void GameWindow::keyReleaseEvent(QKeyEvent* e)
 
 void GameWindow::mouseMoveEvent(QMouseEvent* e)
 {
-	if (e->globalPos() != QPoint(width() / 2, height() / 2))
-	{
-		player->Rotate(QQuaternion::fromAxisAndAngle(0, 1, 0, (mousePosition.x() - e->globalPos().x()) / 3));
-		mousePosition = e->globalPos();
-	}
+	if (cameraXRotation)
+		camera->ChangeYaw(e->localPos().x() - mousePosition.x());
+	else
+		player->Rotate(QQuaternion::fromAxisAndAngle(0, 1, 0, (mousePosition.x() - e->localPos().x()) / 3));
+
+	camera->ChangePitch(e->localPos().y() - mousePosition.y());
+
+	mousePosition = e->localPos();
 }
 
 void GameWindow::wheelEvent(QWheelEvent* e)
 {
-	distance -= (float)e->delta()/500;
-	qDebug() << distance;
+	camera->ChangeZoom(e->delta());
+}
+
+void GameWindow::mousePressEvent(QMouseEvent* e)
+{
+	if (e->button() == Qt::MouseButton::RightButton)
+		cameraXRotation = true;
+}
+
+void GameWindow::mouseReleaseEvent(QMouseEvent* e)
+{
+	if (e->button() == Qt::MouseButton::RightButton)
+		cameraXRotation = false;
 }

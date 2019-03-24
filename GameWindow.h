@@ -6,6 +6,7 @@
 #include "MeshCollection.h"
 #include "Player.h"
 #include "Shader.h"
+#include "Camera.h"
 #include "Light.h"
 
 class GameWindow : public QOpenGLWindow, protected QOpenGLFunctions
@@ -24,22 +25,22 @@ public:
 
 protected:
 	void SetTransformations();
-	void MoveCamera();
+	void MovePlayer();
 	void keyPressEvent(QKeyEvent*) override;
 	void keyReleaseEvent(QKeyEvent*) override;
 	void mouseMoveEvent(QMouseEvent*) override;
 	void wheelEvent(QWheelEvent*) override;
+	void mousePressEvent(QMouseEvent*) override;
+	void mouseReleaseEvent(QMouseEvent*) override;
 private:
 	Shader* shaderProgram;
 	Player *player;
 	Player* marker;
 
-	QMatrix4x4 projectionMatrix;
-	QMatrix4x4 cameraMatrix;
-
+	Camera *camera;
+	bool cameraXRotation = false;
 	Light *light;
 
 	std::map<char, bool> pressedKeys;
 	QPointF mousePosition;
-	float distance = 1.5f;
 };

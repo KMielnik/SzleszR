@@ -112,9 +112,9 @@ void MeshCollection::InitializeRawModel(std::string path, ModelType modelType)
 		{
 			Vertex vertex;
 			vertex.Position = QVector3D(
-				mesh->mVertices[i].x / 5,
-				mesh->mVertices[i].y / 5,
-				mesh->mVertices[i].z / 5
+				mesh->mVertices[i].x,
+				mesh->mVertices[i].y,
+				mesh->mVertices[i].z 
 			);
 			vertex.Normal = QVector3D(
 				mesh->mNormals[i].x,
