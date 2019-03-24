@@ -5,6 +5,7 @@
 #include <QOpenGLTexture>
 #include "MeshCollection.h"
 #include "Player.h"
+#include "Shader.h"
 
 class GameWindow : public QOpenGLWindow, protected QOpenGLFunctions
 {
@@ -27,15 +28,12 @@ protected:
 	void mouseMoveEvent(QMouseEvent*) override;
 	void wheelEvent(QWheelEvent*) override;
 private:
-	QOpenGLShaderProgram* shaderProgram;
+	Shader* shaderProgram;
 	Player *player;
 	Player* marker;
 
 	QMatrix4x4 projectionMatrix;
 	QMatrix4x4 cameraMatrix;
-
-	int projectionMatrixLoc = 0;
-	int cameraMatrixLoc = 0;
 
 	std::map<char, bool> pressedKeys;
 	QPointF mousePosition;

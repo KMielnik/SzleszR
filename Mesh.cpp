@@ -7,7 +7,7 @@ void Mesh::Draw()
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 }
 
-Mesh::Mesh(std::vector<Vertex> vertices, QOpenGLShaderProgram* m_program)
+Mesh::Mesh(std::vector<Vertex> vertices, Shader* shaderProgram)
 {
 	this->vertices = vertices;
 
@@ -21,22 +21,13 @@ Mesh::Mesh(std::vector<Vertex> vertices, QOpenGLShaderProgram* m_program)
 	VBO->setUsagePattern(QOpenGLBuffer::StaticDraw);
 	VBO->allocate(vertices.data(), vertices.size() * sizeof(Vertex));
 
-	//Vertices
-	m_program->enableAttributeArray(0);
-	m_program->setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(Vertex));
-
-	//normals
-	m_program->enableAttributeArray(1);
-	m_program->setAttributeBuffer(1, GL_FLOAT, sizeof(QVector3D), 3, sizeof(Vertex));
-
-	//texture coordinates
-	m_program->enableAttributeArray(2);
-	m_program->setAttributeBuffer(2, GL_FLOAT, sizeof(QVector3D)*2, 2, sizeof(Vertex));
+	shaderProgram->SetVertexVBOData();
 
 	VBO->release();
 	VAOBinder->release();
 	VAO.release();
-	m_program->release();
+
+	shaderProgram->Release();
 }
 
 Mesh::~Mesh()

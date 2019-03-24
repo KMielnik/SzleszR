@@ -12,19 +12,12 @@ void GameWindow::initializeGL()
 	initializeOpenGLFunctions();
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
-
-	shaderProgram = new QOpenGLShaderProgram();
-	shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, "Resources/Shaders/simple.vert");
-	shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "Resources/Shaders/simple.frag");
-
-	shaderProgram->link();
-	shaderProgram->bind();
+	shaderProgram = new Shader();
 
 	meshCollection = MeshCollection::GetInstance();
 	meshCollection->Initialize(shaderProgram);
 
-	projectionMatrixLoc = shaderProgram->uniformLocation("projectionMatrix");
-	cameraMatrixLoc = shaderProgram->uniformLocation("cameraMatrix");
+	
 
 	cameraMatrix.setToIdentity();
 	cameraMatrix.translate(0, -1.0f, -1);
@@ -60,13 +53,13 @@ void GameWindow::paintGL()
 		QVector3D(0,1,0));
 	
 
-	shaderProgram->bind();
+	shaderProgram->Bind();
 	SetTransformations();
 
 
 	player->Draw();
 	marker->Draw();
-	shaderProgram->release();
+	shaderProgram->Release();
 
 	update();
 }
@@ -79,8 +72,8 @@ void GameWindow::teardownGL()
 
 void GameWindow::SetTransformations()
 {
-	shaderProgram->setUniformValue(projectionMatrixLoc, projectionMatrix);
-	shaderProgram->setUniformValue(cameraMatrixLoc, cameraMatrix);
+	shaderProgram->LoadProjectionMatrix(projectionMatrix);
+	shaderProgram->LoadCameraMatrix(cameraMatrix);
 }
 
 void GameWindow::MoveCamera()

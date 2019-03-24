@@ -103,6 +103,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshCollection.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="GameWindow.h" />
@@ -112,6 +113,8 @@
     <ClInclude Include="IEntity.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshCollection.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\simple.frag" />

@@ -5,14 +5,9 @@
 #include <QOpenGLFunctions>
 #include <QVector3D>
 #include <QVector2D>
+#include "Shader.h"
+#include "Vertex.h"
 
-
-struct Vertex
-{
-	QVector3D Position;
-	QVector3D Normal;
-	QVector2D TexCoords;
-};
 
 class Mesh
 {
@@ -20,7 +15,7 @@ public:
 	void Draw();
 	std::vector<Vertex> vertices;
 
-	Mesh(std::vector<Vertex> vertices, QOpenGLShaderProgram* m_program);
+	Mesh(std::vector<Vertex> vertices, Shader* shaderProgram);
 	~Mesh();
 
 private:
@@ -28,5 +23,5 @@ private:
 	QOpenGLVertexArrayObject::Binder *VAOBinder;
 	QOpenGLBuffer *VBO;
 
-	QOpenGLShaderProgram* shaderProgram;
+	Shader* shaderProgram;
 };

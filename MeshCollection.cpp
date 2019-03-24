@@ -1,10 +1,9 @@
 #include "MeshCollection.h"
 #include <QDebug>
 
-void MeshCollection::Initialize(QOpenGLShaderProgram *shaderProgram)
+void MeshCollection::Initialize(Shader *shaderProgram)
 {
 	this->shaderProgram = shaderProgram;
-	modelTransformationsLoc = shaderProgram->uniformLocation("modelTransformations");
 	glFunc = QOpenGLContext::currentContext()->functions();
 }
 
@@ -49,7 +48,7 @@ void MeshCollection::InitializeTexture(ModelTexture modelTexture)
 
 void MeshCollection::Draw(ModelType modelType, ModelTexture modelTexture, QMatrix4x4 transformations)
 {
-	shaderProgram->setUniformValue(modelTransformationsLoc, transformations);
+	shaderProgram->LoadModelTransformationsMatrix(transformations);
 
 	if (textures.find(modelTexture) != textures.end())
 	{
