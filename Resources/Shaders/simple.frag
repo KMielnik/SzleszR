@@ -19,9 +19,7 @@ void main()
 	vec3 unitToLightVector = normalize(toLightVector);;
 
 	float dotLight = dot(unitSurfaceNormal,unitToLightVector);
-	float brightness = max(dotLight,0.0);
-
-	vec4 ambientLighting = min(texture(diffuseTexture,texCoord),0.1);
+	float brightness = max(dotLight,0.2);
 
 	vec3 diffuse = brightness * lightColor;
 	vec4 diffuseLighting = vec4(diffuse,1.0) * texture(diffuseTexture,texCoord);
@@ -38,5 +36,5 @@ void main()
 
 	vec4 specularLighting = vec4(dampedFactor *texture(specularTexture,texCoord).xyz* lightColor, 1.0);
 
-	fColor = ambientLighting + diffuseLighting + specularLighting; 
+	fColor =  + diffuseLighting + specularLighting; 
 }
