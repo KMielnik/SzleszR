@@ -114,8 +114,8 @@
     <ClInclude Include="MeshCollection.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\simple.frag" />
-    <None Include="Resources\simple.vert" />
+    <None Include="Resources\Shaders\simple.frag" />
+    <None Include="Resources\Shaders\simple.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

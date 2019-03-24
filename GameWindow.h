@@ -40,6 +40,4 @@ private:
 	std::map<char, bool> pressedKeys;
 	QPointF mousePosition;
 	float distance = 1.5f;
-
-	QOpenGLTexture* texture;
 };

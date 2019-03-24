@@ -8,7 +8,7 @@ class Player : IEntity
 {
 public:
 	~Player() override;
-	Player();
+	Player(MeshCollection::ModelTexture modelTexture);
 	void Draw() override;
 	void Move(QVector3D dPosition);
 	void Rotate(QQuaternion quaternion);
@@ -21,4 +21,6 @@ private:
 	QVector3D position;
 	QQuaternion rotation;
 	MeshCollection* meshCollection;
+
+	MeshCollection::ModelTexture playerModelTexture;
 };

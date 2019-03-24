@@ -5,10 +5,13 @@ Player::~Player()
 {
 }
 
-Player::Player()
+Player::Player(MeshCollection::ModelTexture modelTexture)
 {
 	meshCollection = MeshCollection::GetInstance();
-	meshCollection->InitializeModel(MeshCollection::ModelType::Man);
+	meshCollection->InitializeModel(MeshCollection::ModelType::Robot);
+	meshCollection->InitializeTexture(modelTexture);
+
+	playerModelTexture = modelTexture;
 
 	initialTransformation.setToIdentity();
 }
@@ -19,7 +22,8 @@ void Player::Draw()
 	transformations.translate(position);
 	transformations.rotate(rotation);
 
-	meshCollection->Draw(MeshCollection::ModelType::Man, transformations);
+	meshCollection->Draw(MeshCollection::ModelType::Robot, playerModelTexture,
+		transformations);
 }
 
 void Player::Move(QVector3D dPosition)

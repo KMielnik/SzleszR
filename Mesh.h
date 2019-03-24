@@ -14,21 +14,13 @@ struct Vertex
 	QVector2D TexCoords;
 };
 
-struct Texture
-{
-	unsigned int id;
-	std::string type;
-};
-
 class Mesh
 {
 public:
 	void Draw();
 	std::vector<Vertex> vertices;
-	std::vector<Texture> textures;
 
-	Mesh(std::vector<Vertex> vertices,
-		std::vector<Texture> textures, QOpenGLShaderProgram* m_program);
+	Mesh(std::vector<Vertex> vertices, QOpenGLShaderProgram* m_program);
 	~Mesh();
 
 private:

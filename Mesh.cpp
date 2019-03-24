@@ -7,11 +7,9 @@ void Mesh::Draw()
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 }
 
-Mesh::Mesh(std::vector<Vertex> vertices,
-	std::vector<Texture> textures, QOpenGLShaderProgram* m_program)
+Mesh::Mesh(std::vector<Vertex> vertices, QOpenGLShaderProgram* m_program)
 {
 	this->vertices = vertices;
-	this->textures = textures;
 
 	VAO.create();
 	VAO.bind();

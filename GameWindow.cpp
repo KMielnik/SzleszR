@@ -14,8 +14,8 @@ void GameWindow::initializeGL()
 
 
 	shaderProgram = new QOpenGLShaderProgram();
-	shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, "Resources/simple.vert");
-	shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "Resources/simple.frag");
+	shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, "Resources/Shaders/simple.vert");
+	shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "Resources/Shaders/simple.frag");
 
 	shaderProgram->link();
 	shaderProgram->bind();
@@ -31,15 +31,10 @@ void GameWindow::initializeGL()
 	cameraMatrix.rotate(30, 1, 0, 0);
 	cameraMatrix.lookAt(QVector3D(0, 0, 0), QVector3D(0, 0, 0), QVector3D(0, 1, 0));
 	
-	player = new Player();
+	player = new Player(MeshCollection::ModelTexture::Robot_Basic);
 	
-	marker = new Player();
-	marker->Move(QVector3D(0.5, 0, 0));
-	texture = new QOpenGLTexture(QImage("Resources/wire.jpg").mirrored());
-	texture->setAutoMipMapGenerationEnabled(true);
-	texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-	texture->setMagnificationFilter(QOpenGLTexture::Linear);
-	
+	marker = new Player(MeshCollection::ModelTexture::Robot_Red);
+	marker->Move(QVector3D(0.5, 0, 0));	
 }
 
 void GameWindow::resizeGL(int w, int h)
@@ -60,11 +55,12 @@ void GameWindow::paintGL()
 	MoveCamera();
 	cameraMatrix.setToIdentity();
 
-	cameraMatrix.lookAt(player->GetPosition()+player->GetRotation()*QVector3D(0,distance,-1), player->GetPosition() + QVector3D(0,0.8,0), QVector3D(0,1,0));
+	cameraMatrix.lookAt(player->GetPosition()+player->GetRotation()*QVector3D(0,distance,-1), 
+		player->GetPosition() + QVector3D(0,0.8,0), 
+		QVector3D(0,1,0));
 	
 
 	shaderProgram->bind();
-	texture->bind();
 	SetTransformations();
 
 
