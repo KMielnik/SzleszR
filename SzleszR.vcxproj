@@ -98,6 +98,7 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="main.cpp" />
@@ -109,6 +110,7 @@
     <QtMoc Include="GameWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="IEntity.h" />
     <ClInclude Include="Mesh.h" />

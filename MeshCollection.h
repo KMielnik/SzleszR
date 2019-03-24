@@ -12,10 +12,11 @@ struct Texture
 {
 	QOpenGLTexture* diffuse;
 	QOpenGLTexture* specular;
+	float shineDamper;
 
 
-	Texture(QOpenGLTexture* diffuse, QOpenGLTexture* specular)
-		: diffuse(diffuse), specular(specular) {}
+	Texture(QOpenGLTexture* diffuse, QOpenGLTexture* specular, float shineDamper)
+		: diffuse(diffuse), specular(specular), shineDamper(shineDamper) {}
 	~Texture()
 	{
 		delete diffuse;

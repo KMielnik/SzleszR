@@ -17,7 +17,7 @@ void GameWindow::initializeGL()
 	meshCollection = MeshCollection::GetInstance();
 	meshCollection->Initialize(shaderProgram);
 
-	
+	light = new Light(QVector3D(1, 1, -1), QVector3D(1, 1, 1));
 
 	cameraMatrix.setToIdentity();
 	cameraMatrix.translate(0, -1.0f, -1);
@@ -74,6 +74,7 @@ void GameWindow::SetTransformations()
 {
 	shaderProgram->LoadProjectionMatrix(projectionMatrix);
 	shaderProgram->LoadCameraMatrix(cameraMatrix);
+	shaderProgram->LoadLight(light);
 }
 
 void GameWindow::MoveCamera()

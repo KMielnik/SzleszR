@@ -39,8 +39,20 @@ void Shader::LoadModelTransformationsMatrix(QMatrix4x4 transformationsMatrix)
 	shaderProgram->setUniformValue(modelTransformationsLoc, transformationsMatrix);
 }
 
+void Shader::LoadLight(Light *light)
+{
+	shaderProgram->setUniformValue(lightPositionLoc, light->position);
+	shaderProgram->setUniformValue(lightColorLoc, light->color);
+}
+
+void Shader::LoadShineDamper(float shineDamper)
+{
+	shaderProgram->setUniformValue(shineDamperLoc, shineDamper);
+}
+
 void Shader::SetVertexVBOData()
 {
+	//vertices
 	shaderProgram->enableAttributeArray(0);
 	shaderProgram->setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(Vertex));
 
@@ -63,4 +75,7 @@ void Shader::bindUniformLocations()
 	projectionMatrixLoc = shaderProgram->uniformLocation("projectionMatrix");
 	cameraMatrixLoc = shaderProgram->uniformLocation("cameraMatrix");
 	modelTransformationsLoc = shaderProgram->uniformLocation("modelTransformations");
+	lightPositionLoc = shaderProgram->uniformLocation("lightPosition");
+	lightColorLoc = shaderProgram->uniformLocation("lightColor");
+	shineDamperLoc = shaderProgram->uniformLocation("shineDamper");
 }

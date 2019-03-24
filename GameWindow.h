@@ -6,6 +6,7 @@
 #include "MeshCollection.h"
 #include "Player.h"
 #include "Shader.h"
+#include "Light.h"
 
 class GameWindow : public QOpenGLWindow, protected QOpenGLFunctions
 {
@@ -13,6 +14,7 @@ class GameWindow : public QOpenGLWindow, protected QOpenGLFunctions
 
 public:
 	~GameWindow();
+	GameWindow() = default;
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;
 	void paintGL() override;
@@ -34,6 +36,8 @@ private:
 
 	QMatrix4x4 projectionMatrix;
 	QMatrix4x4 cameraMatrix;
+
+	Light *light;
 
 	std::map<char, bool> pressedKeys;
 	QPointF mousePosition;

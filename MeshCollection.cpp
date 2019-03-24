@@ -56,6 +56,7 @@ void MeshCollection::Draw(ModelType modelType, ModelTexture modelTexture, QMatri
 		textures[modelTexture]->diffuse->bind();
 		glFunc->glActiveTexture(GL_TEXTURE1);
 		textures[modelTexture]->specular->bind();
+		shaderProgram->LoadShineDamper(textures[modelTexture]->shineDamper);
 	}
 	else
 		qDebug() << "ERROR: Tried to use unitialized texture.";
@@ -146,6 +147,6 @@ void MeshCollection::InitializeRawTexture(std::string path, std::string fileExte
 	specular->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
 	specular->setMagnificationFilter(QOpenGLTexture::Linear);
 
-	auto texture = new Texture(diffuse, specular);
+	auto texture = new Texture(diffuse, specular, 10);
 	textures[modelTexture] = texture;
 }
