@@ -50,6 +50,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="GameWindow.h">
@@ -61,9 +64,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IEntity.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
@@ -80,6 +80,9 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

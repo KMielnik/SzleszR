@@ -25,7 +25,6 @@ void GameWindow::initializeGL()
 	mousePosition = QPoint(size().width() / 2, size().height() / 2);
 	
 	marker = new Player(MeshCollection::ModelTexture::Robot_Red);
-	marker->Move(QVector3D(0.5, 0, 0));	
 }
 
 void GameWindow::resizeGL(int w, int h)
@@ -45,6 +44,8 @@ void GameWindow::paintGL()
 
 
 	MovePlayer();
+	player->PerformLogicStep();
+	marker->PerformLogicStep();
 
 	shaderProgram->Bind();
 	SetTransformations();
@@ -71,7 +72,7 @@ void GameWindow::SetTransformations()
 
 void GameWindow::MovePlayer()
 {
-	float speed = 0.1f;
+	float speed = 1.f;
 	float dx = 0;
 	if (pressedKeys[Qt::Key_A]) dx += speed;
 	if (pressedKeys[Qt::Key_D]) dx -= speed;
@@ -80,11 +81,7 @@ void GameWindow::MovePlayer()
 	if (pressedKeys[Qt::Key_W]) dz += speed;
 	if (pressedKeys[Qt::Key_S]) dz -= speed;
 
-	float dy = 0;
-	if (pressedKeys[Qt::Key_Q]) dy += speed;
-	if (pressedKeys[Qt::Key_E]) dy -= speed;
-
-	player->Move(QVector3D(-dx, 0, -dz));
+	player->Move(QVector3D(dx, 0, dz));
 }
 
 void GameWindow::keyPressEvent(QKeyEvent* e)

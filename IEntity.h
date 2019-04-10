@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-class IEntity
+class Entity
 {
 public:
-	virtual ~IEntity() = default;
+	virtual ~Entity() = default;
 	virtual void Draw() = 0;
+
 };

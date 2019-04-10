@@ -1,15 +1,32 @@
 ﻿#pragma once
-#include "IEntity.h"
 #include <QVector3D>
-#include <QQuaternion>
+#include "MeshCollection.h"
 
-class Player : IEntity
+class Entity
 {
 public:
-	~Player() override;
-	void Draw() override;
+	Entity(MeshCollection::ModelType type, MeshCollection::ModelTexture texture);
+	virtual ~Entity() = default;
+	virtual void Draw();
 
-private:
+	virtual void PerformLogicStep();
+
+	virtual void Move(QVector3D direction);
+	virtual void Rotate(QQuaternion quaternion);
+
+	virtual QVector3D GetPosition();
+	virtual QQuaternion GetRotation();
+
+protected:
+	MeshCollection::ModelTexture modelTexture;
+	MeshCollection::ModelType modelType;
+
+	QMatrix4x4 initialTransformation;
 	QVector3D position;
+	float gravitation;
+	float maxSpeed = 0.3;
+	QVector2D simpleMovement;
 	QQuaternion rotation;
+	MeshCollection* meshCollection;
 };
+
