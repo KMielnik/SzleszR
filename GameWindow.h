@@ -8,6 +8,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Light.h"
+#include "Terrain.h"
 
 class GameWindow : public QOpenGLWindow, protected QOpenGLFunctions
 {
@@ -32,10 +33,12 @@ protected:
 	void wheelEvent(QWheelEvent*) override;
 	void mousePressEvent(QMouseEvent*) override;
 	void mouseReleaseEvent(QMouseEvent*) override;
+	void mouseDoubleClickEvent(QMouseEvent*) override;
 private:
 	Shader* shaderProgram;
 	Player *player;
 	Player* marker;
+	Terrain* terrain;
 
 	Camera *camera;
 	bool cameraXRotation = false;

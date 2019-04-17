@@ -10,8 +10,10 @@ public:
 	virtual void Draw();
 
 	virtual void PerformLogicStep();
+	virtual bool CheckCollision(Entity *entity);
 
 	virtual void Move(QVector3D direction);
+	virtual void SetPosition(QVector3D newPosition);
 	virtual void Rotate(QQuaternion quaternion);
 
 	virtual QVector3D GetPosition();
@@ -23,9 +25,11 @@ protected:
 
 	QMatrix4x4 initialTransformation;
 	QVector3D position;
-	float gravitation;
-	float maxSpeed = 0.3;
+	float radius = 0.5f;
+	float gravitation = 0.5f;
+	float maxSpeed = 0.08f;
 	QVector2D simpleMovement;
+	QVector3D force;
 	QQuaternion rotation;
 	MeshCollection* meshCollection;
 };

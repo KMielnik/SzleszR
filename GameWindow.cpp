@@ -17,7 +17,7 @@ void GameWindow::initializeGL()
 	meshCollection = MeshCollection::GetInstance();
 	meshCollection->Initialize(shaderProgram);
 
-	light = new Light(QVector3D(1, 1, -1), QVector3D(1, 1, 1));
+	light = new Light(QVector3D(100, 100, -100), QVector3D(1, 1, 1));
 	
 	player = new Player(MeshCollection::ModelTexture::Robot_Basic);
 
@@ -25,6 +25,8 @@ void GameWindow::initializeGL()
 	mousePosition = QPoint(size().width() / 2, size().height() / 2);
 	
 	marker = new Player(MeshCollection::ModelTexture::Robot_Red);
+	marker->SetPosition(QVector3D(0, 0, 3));
+	terrain = new Terrain();
 }
 
 void GameWindow::resizeGL(int w, int h)
@@ -42,16 +44,23 @@ void GameWindow::paintGL()
 	glEnable(GL_LIGHTING);
 	glShadeModel(GL_FLAT);
 
+	
 
 	MovePlayer();
+
+	player->CheckCollision(marker);
+	marker->CheckCollision(player);
+
 	player->PerformLogicStep();
 	marker->PerformLogicStep();
+	
 
 	shaderProgram->Bind();
 	SetTransformations();
 
 	player->Draw();
 	marker->Draw();
+	terrain->Draw();
 
 	shaderProgram->Release();
 
@@ -121,4 +130,10 @@ void GameWindow::mouseReleaseEvent(QMouseEvent* e)
 {
 	if (e->button() == Qt::MouseButton::RightButton)
 		cameraXRotation = false;
+}
+
+void GameWindow::mouseDoubleClickEvent(QMouseEvent* e)
+{
+	if (e->button() == Qt::MouseButton::RightButton)
+		camera->ResetYaw();
 }

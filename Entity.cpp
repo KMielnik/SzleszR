@@ -25,8 +25,30 @@ void Entity::Draw()
 
 void Entity::PerformLogicStep()
 {
-	position += rotation * QVector3D(simpleMovement.x(), 0, simpleMovement.y());
-	simpleMovement /= 1.5f;
+	position += rotation * force;
+	force /= 1.5f;
+
+	position.setY(position.y() - gravitation);
+
+	if (position.y() < 0)
+		position.setY(0);
+}
+
+bool Entity::CheckCollision(Entity* entity)
+{
+	QVector3D v = entity->position - position;
+	float d = v.length();
+
+	if (d < (radius + entity->radius))
+	{
+		v.normalize();
+		float energySum = force.length() + entity->force.length();
+		force = rotation* -v * energySum / 2;
+		entity->force = entity->rotation* v * energySum / 2;
+		return true;
+	}
+
+	return false;
 }
 
 void Entity::Move(QVector3D direction)
@@ -36,6 +58,13 @@ void Entity::Move(QVector3D direction)
 	simpleMovement = QVector2D(direction.x(),direction.z());
 	simpleMovement.normalize();
 	simpleMovement *= maxSpeed;
+
+	force += QVector3D(simpleMovement.x(), 0, simpleMovement.y());
+}
+
+void Entity::SetPosition(QVector3D newPosition)
+{
+	position = newPosition;
 }
 
 void Entity::Rotate(QQuaternion quaternion)

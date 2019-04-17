@@ -45,6 +45,11 @@ void Camera::ChangeYaw(float mouseXAxis)
 	yaw -= mouseXAxis * 0.2f;
 }
 
+void Camera::ResetYaw()
+{
+	yaw = 0;
+}
+
 void Camera::SetProjection(float FOV, float width, float height,
 	float nearPlane, float farPlane)
 {

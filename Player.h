@@ -9,8 +9,7 @@ class Player : public Entity
 public:
 	~Player() override;
 	Player(MeshCollection::ModelTexture modelTexture);
-
 	
 private:
-	
+	int HP = 100;
 };

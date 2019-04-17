@@ -17,6 +17,7 @@ public:
 	void ChangeZoom(float mouseWheelDelta);
 	void ChangePitch(float mouseYAxis);
 	void ChangeYaw(float mouseXAxis);
+	void ResetYaw();
 	void SetProjection(float FOV, float width, float height, float nearPlane, float farPlane);
 
 private:

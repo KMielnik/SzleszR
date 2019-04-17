@@ -18,6 +18,10 @@ void MeshCollection::InitializeModel(ModelType modelType)
 		InitializeRawModel("Resources/Models/robot.fbx", modelType);
 		qDebug() << "Initialized model: Robot";
 		break;
+	case ModelType::Terrain:
+		InitializeRawModel("Resources/Models/terrain.fbx", modelType);
+		qDebug() << "Initialized model: Terrain";
+		break;
 	default:
 		qDebug() << "ERROR: Unknown modelType.";
 		break;
