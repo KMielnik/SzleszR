@@ -27,8 +27,8 @@ struct Texture
 class MeshCollection
 {
 public:
-	enum class ModelType { Robot, Terrain };
-	enum class ModelTexture { Robot_Basic, Robot_Red };
+	enum class ModelType { Robot, Terrain, Sphere };
+	enum class ModelTexture { Robot_Basic, Robot_Red, Terrain, Sphere };
 
 	void Initialize(Shader *shaderProgram);
 	void InitializeModel(ModelType modelType);

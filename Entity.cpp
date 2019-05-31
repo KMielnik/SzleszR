@@ -39,7 +39,7 @@ bool Entity::CheckCollision(Entity* entity)
 	QVector3D v = entity->position - position;
 	float d = v.length();
 
-	if (d < (radius + entity->radius))
+	if (d < (innerRadius + entity->innerRadius))
 	{
 		v.normalize();
 		float energySum = force.length() + entity->force.length();

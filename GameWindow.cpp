@@ -1,5 +1,6 @@
 #include "GameWindow.h"
 #include <QDebug>
+#include <corecrt_math_defines.h>
 
 GameWindow::~GameWindow()
 {
@@ -17,8 +18,9 @@ void GameWindow::initializeGL()
 	meshCollection = MeshCollection::GetInstance();
 	meshCollection->Initialize(shaderProgram);
 
-	light = new Light(QVector3D(100, 100, -100), QVector3D(1, 1, 1));
-	
+	for(int i=0;i<2;i++)
+		lights.push_back(new Light( QVector3D(0, 2, 0), QVector3D(1, 1, 1)));
+
 	player = new Player(MeshCollection::ModelTexture::Robot_Basic);
 
 	camera = new Camera(player, shaderProgram);
@@ -27,6 +29,8 @@ void GameWindow::initializeGL()
 	marker = new Player(MeshCollection::ModelTexture::Robot_Red);
 	marker->SetPosition(QVector3D(0, 0, 3));
 	terrain = new Terrain();
+	sphere = new Sphere(MeshCollection::ModelTexture::Sphere);
+	sphere->SetPosition(QVector3D(1, 1, 1));
 }
 
 void GameWindow::resizeGL(int w, int h)
@@ -53,16 +57,30 @@ void GameWindow::paintGL()
 
 	player->PerformLogicStep();
 	marker->PerformLogicStep();
-	
 
-	shaderProgram->Bind();
+	float theta = player->GetRotation().toEulerAngles().y();
+	float offsetX = 2 * std::sin(theta * M_PI / 180);
+	float offsetZ = 2 * std::cos(theta * M_PI / 180);
+
+	lights[0]->setPosition(player->GetPosition() + QVector3D(0-offsetX, 7, 0-offsetZ));
+	lights[0]->setColor(player->GetColor());
+	sphere->SetPosition(player->GetPosition() + QVector3D(0 - offsetX, 7, 0 - offsetZ));
+
+	theta = marker->GetRotation().toEulerAngles().y();
+	offsetX = 2 * std::sin(theta * M_PI / 180);
+	offsetZ = 2 * std::cos(theta * M_PI / 180);
+	lights[1]->setPosition(marker->GetPosition() + QVector3D(0-offsetX, 7, 0-offsetZ));
+	lights[1]->setColor(marker->GetColor());
+
+
+	
 	SetTransformations();
 
 	player->Draw();
 	marker->Draw();
 	terrain->Draw();
+	sphere->Draw();
 
-	shaderProgram->Release();
 
 	update();
 }
@@ -75,8 +93,12 @@ void GameWindow::teardownGL()
 
 void GameWindow::SetTransformations()
 {
+	shaderProgram->Bind();
+
 	camera->Move();
-	shaderProgram->LoadLight(light);
+	shaderProgram->LoadLights(lights);
+
+	shaderProgram->Release();
 }
 
 void GameWindow::MovePlayer()
@@ -122,6 +144,8 @@ void GameWindow::wheelEvent(QWheelEvent* e)
 
 void GameWindow::mousePressEvent(QMouseEvent* e)
 {
+	if (e->button() == Qt::MouseButton::LeftButton)
+		player->Attack();
 	if (e->button() == Qt::MouseButton::RightButton)
 		cameraXRotation = true;
 }

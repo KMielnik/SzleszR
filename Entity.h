@@ -25,7 +25,7 @@ protected:
 
 	QMatrix4x4 initialTransformation;
 	QVector3D position;
-	float radius = 0.5f;
+	float innerRadius = 0.5f;
 	float gravitation = 0.5f;
 	float maxSpeed = 0.08f;
 	QVector2D simpleMovement;

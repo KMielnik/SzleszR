@@ -9,6 +9,9 @@
 #include "Camera.h"
 #include "Light.h"
 #include "Terrain.h"
+#include "Sphere.h"
+
+#define MAX_LIGHTS 10
 
 class GameWindow : public QOpenGLWindow, protected QOpenGLFunctions
 {
@@ -39,10 +42,11 @@ private:
 	Player *player;
 	Player* marker;
 	Terrain* terrain;
+	Sphere* sphere;
 
 	Camera *camera;
 	bool cameraXRotation = false;
-	Light *light;
+	std::vector<Light *> lights;
 
 	std::map<char, bool> pressedKeys;
 	QPointF mousePosition;

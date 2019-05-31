@@ -25,6 +25,10 @@ void MeshCollection::InitializeModel(ModelType modelType)
 	default:
 		qDebug() << "ERROR: Unknown modelType.";
 		break;
+	case ModelType::Sphere:
+		InitializeRawModel("Resources/Models/sphere.fbx", modelType);
+		qDebug() << "Initialized model: Sphere";
+		break;
 	}
 }
 
@@ -43,6 +47,14 @@ void MeshCollection::InitializeTexture(ModelTexture modelTexture)
 		InitializeRawTexture("Resources/textures/robot_red_", ".png", modelTexture);
 		break;
 
+	case ModelTexture::Terrain:
+		InitializeRawTexture("Resources/textures/terrain_", ".png", modelTexture);
+		break;
+
+	case ModelTexture::Sphere:
+		InitializeRawTexture("Resources/textures/sphere_", ".png", modelTexture);
+		break;
+
 	default:
 		qDebug() << "ERROR: Unknown modelTexture.";
 		break;
@@ -52,6 +64,7 @@ void MeshCollection::InitializeTexture(ModelTexture modelTexture)
 
 void MeshCollection::Draw(ModelType modelType, ModelTexture modelTexture, QMatrix4x4 transformations)
 {
+	shaderProgram->Bind();
 	shaderProgram->LoadModelTransformationsMatrix(transformations);
 
 	if (textures.find(modelTexture) != textures.end())

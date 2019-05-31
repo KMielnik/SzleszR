@@ -39,10 +39,21 @@ void Shader::LoadModelTransformationsMatrix(QMatrix4x4 transformationsMatrix)
 	shaderProgram->setUniformValue(modelTransformationsLoc, transformationsMatrix);
 }
 
-void Shader::LoadLight(Light *light)
+void Shader::LoadLights(std::vector<Light *> light)
 {
-	shaderProgram->setUniformValue(lightPositionLoc, light->position);
-	shaderProgram->setUniformValue(lightColorLoc, light->color);
+	QVector3D positions[MAX_LIGHTS];
+	QVector3D colors[MAX_LIGHTS];
+
+	for(int i=0;i<light.size();i++)
+	{
+		positions[i] = light[i]->position;
+		colors[i] = light[i]->color;
+	}
+	
+	shaderProgram->setUniformValueArray(lightsPositionLoc,positions ,MAX_LIGHTS);
+	shaderProgram->setUniformValueArray(lightsColorLoc,colors, MAX_LIGHTS);
+
+	shaderProgram->setUniformValue(lightsCountLoc, GLint(light.size()));
 }
 
 void Shader::LoadShineDamper(float shineDamper)
@@ -75,7 +86,8 @@ void Shader::bindUniformLocations()
 	projectionMatrixLoc = shaderProgram->uniformLocation("projectionMatrix");
 	cameraMatrixLoc = shaderProgram->uniformLocation("cameraMatrix");
 	modelTransformationsLoc = shaderProgram->uniformLocation("modelTransformations");
-	lightPositionLoc = shaderProgram->uniformLocation("lightPosition");
-	lightColorLoc = shaderProgram->uniformLocation("lightColor");
+	lightsPositionLoc = shaderProgram->uniformLocation("lightsPosition");
+	lightsColorLoc = shaderProgram->uniformLocation("lightsColors");
+	lightsCountLoc = shaderProgram->uniformLocation("lightsCount");
 	shineDamperLoc = shaderProgram->uniformLocation("shineDamper");
 }
