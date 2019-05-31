@@ -13,6 +13,16 @@ Entity::Entity(MeshCollection::ModelType type, MeshCollection::ModelTexture text
 	initialTransformation.setToIdentity();
 }
 
+Entity::Entity(MeshCollection::ModelType type)
+{
+	modelType = type;
+
+	meshCollection = MeshCollection::GetInstance();
+	meshCollection->InitializeModel(modelType);
+
+	initialTransformation.setToIdentity();
+}
+
 void Entity::Draw()
 {
 	QMatrix4x4 transformations = initialTransformation;

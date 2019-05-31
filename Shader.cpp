@@ -2,11 +2,18 @@
 #include "Vertex.h"
 
 
-Shader::Shader()
+Shader::Shader(QMatrix4x4* projectionMatrix, QMatrix4x4* cameraMatrix, std::vector<Light*> *lights)
 {
+	vertexFile = "Resources/Shaders/simpleModel.vert";
+	fragmentFile = "Resources/Shaders/simpleTextured.frag";
+
 	shaderProgram = new QOpenGLShaderProgram();
 	shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, vertexFile.c_str());
 	shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, fragmentFile.c_str());
+
+	this->projectionMatrix = projectionMatrix;
+	this->cameraMatrix = cameraMatrix;
+	this->lights = lights;
 
 	shaderProgram->link();
 	shaderProgram->bind();
@@ -22,6 +29,9 @@ Shader::~Shader()
 void Shader::Bind()
 {
 	shaderProgram->bind();
+	LoadCameraMatrix(*cameraMatrix);
+	LoadProjectionMatrix(*projectionMatrix);
+	LoadLights(*lights);
 }
 
 void Shader::Release()
@@ -90,4 +100,19 @@ void Shader::bindUniformLocations()
 	lightsColorLoc = shaderProgram->uniformLocation("lightsColors");
 	lightsCountLoc = shaderProgram->uniformLocation("lightsCount");
 	shineDamperLoc = shaderProgram->uniformLocation("shineDamper");
+}
+
+void ColorShader::LoadColor(int r, int g, int b)
+{
+	shaderProgram->setUniformValue(colorLoc, QVector3D(r, g, b));
+}
+
+void ColorShader::LoadColor(QVector3D color)
+{
+	shaderProgram->setUniformValue(colorLoc, color);
+}
+
+void ColorShader::bindUniformLocations()
+{
+	colorLoc = shaderProgram->uniformLocation("color");
 }

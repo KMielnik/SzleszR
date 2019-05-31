@@ -12,6 +12,7 @@ uniform mat4 cameraMatrix;
 uniform vec3 lightsPosition[MAX_LIGHTS];
 uniform int lightsCount;
 
+out vec2 texCoord;
 out vec3 surfaceNormal;
 out vec3 toLightVectors[MAX_LIGHTS];
 out vec3 toCameraVector;
@@ -21,6 +22,7 @@ void main()
 	vec4 worldPosition = modelTransformations * vec4(position,1.0);
 
 	gl_Position = projectionMatrix * cameraMatrix * worldPosition;
+	texCoord = texcoords;
 
 	surfaceNormal = (modelTransformations * vec4(normals, 0.0)).xyz;
 	for(int i=0;i<lightsCount;i++)

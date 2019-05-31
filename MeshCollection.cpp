@@ -1,9 +1,11 @@
 #include "MeshCollection.h"
 #include <QDebug>
 
-void MeshCollection::Initialize(Shader *shaderProgram)
+void MeshCollection::Initialize(QMatrix4x4* projectionMatrix, QMatrix4x4* cameraMatrix, std::vector<Light*>* lights)
 {
-	this->shaderProgram = shaderProgram;
+	this->basicShaderProgram = new Shader(projectionMatrix, cameraMatrix, lights);
+	this->colorShaderProgram = new ColorShader(projectionMatrix, cameraMatrix, lights);
+
 	glFunc = QOpenGLContext::currentContext()->functions();
 }
 
@@ -51,10 +53,6 @@ void MeshCollection::InitializeTexture(ModelTexture modelTexture)
 		InitializeRawTexture("Resources/textures/terrain_", ".png", modelTexture);
 		break;
 
-	case ModelTexture::Sphere:
-		InitializeRawTexture("Resources/textures/sphere_", ".png", modelTexture);
-		break;
-
 	default:
 		qDebug() << "ERROR: Unknown modelTexture.";
 		break;
@@ -64,8 +62,8 @@ void MeshCollection::InitializeTexture(ModelTexture modelTexture)
 
 void MeshCollection::Draw(ModelType modelType, ModelTexture modelTexture, QMatrix4x4 transformations)
 {
-	shaderProgram->Bind();
-	shaderProgram->LoadModelTransformationsMatrix(transformations);
+	basicShaderProgram->Bind();
+	basicShaderProgram->LoadModelTransformationsMatrix(transformations);
 
 	if (textures.find(modelTexture) != textures.end())
 	{
@@ -73,7 +71,7 @@ void MeshCollection::Draw(ModelType modelType, ModelTexture modelTexture, QMatri
 		textures[modelTexture]->diffuse->bind();
 		glFunc->glActiveTexture(GL_TEXTURE1);
 		textures[modelTexture]->specular->bind();
-		shaderProgram->LoadShineDamper(textures[modelTexture]->shineDamper);
+		basicShaderProgram->LoadShineDamper(textures[modelTexture]->shineDamper);
 	}
 	else
 		qDebug() << "ERROR: Tried to use unitialized texture.";
@@ -87,6 +85,21 @@ void MeshCollection::Draw(ModelType modelType, ModelTexture modelTexture, QMatri
 	textures[modelTexture]->diffuse->release();
 }
 
+	
+
+void MeshCollection::Draw(ModelType modelType, QVector3D color, QMatrix4x4 transformations)
+{
+	colorShaderProgram->Bind();
+	colorShaderProgram->LoadModelTransformationsMatrix(transformations);
+
+	colorShaderProgram->LoadColor(color);
+
+	if (meshes.find(modelType) != meshes.end())
+		meshes[modelType]->Draw();
+	else
+		qDebug() << "ERROR: Tried to use unitialized mesh.";
+}
+
 
 MeshCollection::~MeshCollection()
 {
@@ -97,6 +110,8 @@ MeshCollection::~MeshCollection()
 	for (auto texture : textures)
 		delete texture.second;
 	textures.clear();
+
+	delete basicShaderProgram;
 }
 
 MeshCollection* MeshCollection::instance = nullptr;
@@ -147,7 +162,7 @@ void MeshCollection::InitializeRawModel(std::string path, ModelType modelType)
 		}
 	}
 
-	meshes[modelType] = new Mesh(vertices, shaderProgram);
+	meshes[modelType] = new Mesh(vertices, basicShaderProgram);
 }
 
 void MeshCollection::InitializeRawTexture(std::string path, std::string fileExtension, ModelTexture modelTexture)

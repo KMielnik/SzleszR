@@ -40,9 +40,9 @@ protected:
 private:
 	Shader* shaderProgram;
 	Player *player;
-	Player* marker;
+	std::vector<Player *> enemies;
 	Terrain* terrain;
-	Sphere* sphere;
+	std::vector<Sphere*> spheres;
 
 	Camera *camera;
 	bool cameraXRotation = false;

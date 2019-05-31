@@ -98,10 +98,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\simple.frag">
+    <None Include="Resources\Shaders\simpleTextured.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Resources\Shaders\simple.vert">
+    <None Include="Resources\Shaders\simpleModel.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\simpleColored.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

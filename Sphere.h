@@ -6,5 +6,10 @@
 class Sphere : public Entity
 {
 public:
-	Sphere(MeshCollection::ModelTexture modelTexture);
+	Sphere();
+	void setColor(QVector3D color);
+	void Draw() override;
+
+private:
+	QVector3D color;
 };

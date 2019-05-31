@@ -1,10 +1,7 @@
 ﻿#include "Camera.h"
 
-Camera::Camera(Player* player, Shader* shader)
+Camera::Camera()
 {
-	this->player = player;
-	this->shader = shader;
-
 	Reset();
 }
 
@@ -28,7 +25,15 @@ void Camera::Move()
 		position,
 		playerHook,
 		QVector3D(0, 1, 0));
+}
 
+void Camera::SetPlayer(Player* player)
+{
+	this->player = player;
+}
+
+void Camera::LoadCamera(Shader *shader)
+{
 	shader->LoadCameraMatrix(cameraMatrix);
 	shader->LoadProjectionMatrix(projectionMatrix);
 }
@@ -56,6 +61,16 @@ void Camera::SetProjection(float FOV, float width, float height,
 	projectionMatrix.setToIdentity();
 	projectionMatrix.perspective(FOV, (width) / height,
 		nearPlane, farPlane);
+}
+
+QMatrix4x4* Camera::getProjectionMatrixPointer()
+{
+	return &projectionMatrix;
+}
+
+QMatrix4x4* Camera::getCameraMatrixPointer()
+{
+	return &cameraMatrix;
 }
 
 void Camera::Reset()

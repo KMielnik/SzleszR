@@ -13,24 +13,35 @@ void GameWindow::initializeGL()
 	initializeOpenGLFunctions();
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
-	shaderProgram = new Shader();
+	camera = new Camera();
 
 	meshCollection = MeshCollection::GetInstance();
-	meshCollection->Initialize(shaderProgram);
+	meshCollection->Initialize(camera->getProjectionMatrixPointer(), camera->getCameraMatrixPointer(), &lights);
 
-	for(int i=0;i<2;i++)
-		lights.push_back(new Light( QVector3D(0, 2, 0), QVector3D(1, 1, 1)));
+	
 
 	player = new Player(MeshCollection::ModelTexture::Robot_Basic);
-
-	camera = new Camera(player, shaderProgram);
+	camera->SetPlayer(player);
+	
 	mousePosition = QPoint(size().width() / 2, size().height() / 2);
 	
-	marker = new Player(MeshCollection::ModelTexture::Robot_Red);
-	marker->SetPosition(QVector3D(0, 0, 3));
+	enemies.push_back(new Player(MeshCollection::ModelTexture::Robot_Red));
+	enemies.push_back(new Player(MeshCollection::ModelTexture::Robot_Red));
+	enemies.push_back(new Player(MeshCollection::ModelTexture::Robot_Red));
+	enemies[0]->SetPosition(QVector3D(0, 0, 3));
+	enemies[1]->SetPosition(QVector3D(4, 0, 3));
+	enemies[2]->SetPosition(QVector3D(-4, 0, 3));
+	
 	terrain = new Terrain();
-	sphere = new Sphere(MeshCollection::ModelTexture::Sphere);
-	sphere->SetPosition(QVector3D(1, 1, 1));
+
+	
+	spheres.push_back(new Sphere());
+	for(auto enemy :enemies)
+	{
+		spheres.push_back(new Sphere());
+	}
+	for (auto sphere : spheres)
+		lights.push_back(new Light(QVector3D(0, 2, 0), QVector3D(1, 1, 1)));
 }
 
 void GameWindow::resizeGL(int w, int h)
@@ -52,34 +63,24 @@ void GameWindow::paintGL()
 
 	MovePlayer();
 
-	player->CheckCollision(marker);
-	marker->CheckCollision(player);
+	for(auto enemy : enemies)
+	{
+		player->CheckCollision(enemy);
+		enemy->CheckCollision(player);
+	}
 
 	player->PerformLogicStep();
-	marker->PerformLogicStep();
-
-	float theta = player->GetRotation().toEulerAngles().y();
-	float offsetX = 2 * std::sin(theta * M_PI / 180);
-	float offsetZ = 2 * std::cos(theta * M_PI / 180);
-
-	lights[0]->setPosition(player->GetPosition() + QVector3D(0-offsetX, 7, 0-offsetZ));
-	lights[0]->setColor(player->GetColor());
-	sphere->SetPosition(player->GetPosition() + QVector3D(0 - offsetX, 7, 0 - offsetZ));
-
-	theta = marker->GetRotation().toEulerAngles().y();
-	offsetX = 2 * std::sin(theta * M_PI / 180);
-	offsetZ = 2 * std::cos(theta * M_PI / 180);
-	lights[1]->setPosition(marker->GetPosition() + QVector3D(0-offsetX, 7, 0-offsetZ));
-	lights[1]->setColor(marker->GetColor());
-
-
+	for(auto enemy : enemies)
+		enemy->PerformLogicStep();
 	
 	SetTransformations();
 
 	player->Draw();
-	marker->Draw();
+	for(auto enemy : enemies)
+		enemy->Draw();
 	terrain->Draw();
-	sphere->Draw();
+	for(auto sphere : spheres)
+		sphere->Draw();
 
 
 	update();
@@ -88,17 +89,36 @@ void GameWindow::paintGL()
 void GameWindow::teardownGL()
 {
 	delete meshCollection;
-	delete shaderProgram;
 }
 
 void GameWindow::SetTransformations()
 {
-	shaderProgram->Bind();
+	int lightNO = 0;
+	//light player
+	float theta = player->GetRotation().toEulerAngles().y();
+	float offsetX = 1 * std::sin(theta * M_PI / 180);
+	float offsetZ = 1 * std::cos(theta * M_PI / 180);
+	lights[lightNO]->setPosition(player->GetPosition() + QVector3D(0 - offsetX, 6, 0 - offsetZ));
+	lights[lightNO]->setColor(player->GetColor());
+
+	spheres[lightNO]->SetPosition(player->GetPosition() + QVector3D(0 - offsetX, 6, 0 - offsetZ));
+	spheres[lightNO]->setColor(player->GetColor());
+
+	//light enemies
+	for(auto enemy : enemies)
+	{
+		lightNO++;
+		float theta = enemy->GetRotation().toEulerAngles().y();
+		float offsetX = 1 * std::sin(theta * M_PI / 180);
+		float offsetZ = 1 * std::cos(theta * M_PI / 180);
+		lights[lightNO]->setPosition(enemy->GetPosition() + QVector3D(0 - offsetX, 6, 0 - offsetZ));
+		lights[lightNO]->setColor(enemy->GetColor());
+
+		spheres[lightNO]->SetPosition(enemy->GetPosition() + QVector3D(0 - offsetX, 6, 0 - offsetZ));
+		spheres[lightNO]->setColor(enemy->GetColor());
+	}
 
 	camera->Move();
-	shaderProgram->LoadLights(lights);
-
-	shaderProgram->Release();
 }
 
 void GameWindow::MovePlayer()

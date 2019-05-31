@@ -30,10 +30,11 @@ public:
 	enum class ModelType { Robot, Terrain, Sphere };
 	enum class ModelTexture { Robot_Basic, Robot_Red, Terrain, Sphere };
 
-	void Initialize(Shader *shaderProgram);
+	void Initialize(QMatrix4x4* projectionMatrix, QMatrix4x4* cameraMatrix, std::vector<Light*>* lights);
 	void InitializeModel(ModelType modelType);
 	void InitializeTexture(ModelTexture modelTexture);
 	void Draw(ModelType modelType, ModelTexture modelTexture, QMatrix4x4 transformations);
+	void Draw(ModelType modelType, QVector3D color, QMatrix4x4 transformations);
 	~MeshCollection();
 	static MeshCollection* GetInstance();
 
@@ -45,7 +46,8 @@ private:
 	Assimp::Importer importer;
 	std::map< ModelType, Mesh*> meshes;
 	std::map<ModelTexture, Texture*> textures;
-	Shader* shaderProgram;
+	Shader* basicShaderProgram;
+	ColorShader* colorShaderProgram;
 
 	void InitializeRawModel(std::string path, ModelType modelType);
 	void InitializeRawTexture(std::string path, std::string fileExtension, ModelTexture modelTexture);

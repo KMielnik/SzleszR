@@ -7,11 +7,8 @@ in vec3 toLightVectors[MAX_LIGHTS];
 in vec3 toCameraVector;
 
 uniform vec3 lightsColors[MAX_LIGHTS];
-uniform float shineDamper;
 uniform int lightsCount;
-
-layout(binding=0) uniform sampler2D diffuseTexture;
-layout(binding=1) uniform sampler2D specularTexture;
+uniform vec3 color;
 
 out vec4 fColor;
 
@@ -23,7 +20,7 @@ void main()
 	for(int i=0;i<lightsCount;i++)
 		fColor += calculateLight(toLightVectors[i],lightsColors[i]); 
 
-	fColor = min(fColor,vec4(1,1,1,1)) ;
+	fColor = min(vec4(color,1),vec4(1,1,1,1));
 }
 
 vec4 calculateLight(vec3 toLightVector,vec3 lightColor)
@@ -31,13 +28,13 @@ vec4 calculateLight(vec3 toLightVector,vec3 lightColor)
 	vec3 unitSurfaceNormal = normalize(surfaceNormal);
 	vec3 unitToLightVector = normalize(toLightVector);
 	
-	float attenuation = 1.0/ (1.0 + 0.01*pow(length(toLightVector),2));
+	float attenuation = 1.0/ (1.0 + 0.1*pow(length(toLightVector),2));
 
 	float dotLight = dot(unitSurfaceNormal,unitToLightVector);
 	float brightness = dotLight;
 
 	vec3 diffuse = brightness * lightColor;
-	vec4 diffuseLighting = vec4(diffuse,1.0) * texture(diffuseTexture,texCoord);
+	vec4 diffuseLighting = vec4(diffuse,1.0) * vec4(color,1);
 
 	vec3 unitVectorToCamera = normalize(toCameraVector);
 	vec3 lightDirection = -unitToLightVector;
@@ -47,11 +44,9 @@ vec4 calculateLight(vec3 toLightVector,vec3 lightColor)
 	float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
 	specularFactor = max(specularFactor,0.0);
 
-	float dampedFactor = pow(specularFactor,shineDamper);
+	vec4 specularLighting = vec4(vec4(0.0,0.0,0.0,1).xyz* lightColor, 1.0);
 
-	vec4 specularLighting = vec4(dampedFactor *texture(specularTexture,texCoord).xyz* lightColor, 1.0);
-
-	vec4 ambientLighting = vec4(0.2,0.2,0.2,1) * texture(diffuseTexture,texCoord);
+	vec4 ambientLighting = vec4(0.2,0.2,0.2,1) * vec4(color,1);
 
 	return ambientLighting + (attenuation * (diffuseLighting + specularLighting));
 }

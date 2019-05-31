@@ -6,6 +6,7 @@ class Entity
 {
 public:
 	Entity(MeshCollection::ModelType type, MeshCollection::ModelTexture texture);
+	Entity(MeshCollection::ModelType type);
 	virtual ~Entity() = default;
 	virtual void Draw();
 

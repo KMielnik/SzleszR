@@ -9,9 +9,11 @@
 class Camera
 {
 public:
-	Camera(Player* player, Shader* shader);
+	Camera();
 
 	void Move();
+	void SetPlayer(Player* player);
+	void LoadCamera(Shader *shader);
 	void Reset();
 
 	void ChangeZoom(float mouseWheelDelta);
@@ -19,6 +21,9 @@ public:
 	void ChangeYaw(float mouseXAxis);
 	void ResetYaw();
 	void SetProjection(float FOV, float width, float height, float nearPlane, float farPlane);
+
+	QMatrix4x4* getProjectionMatrixPointer();
+	QMatrix4x4* getCameraMatrixPointer();
 
 private:
 	QVector3D position;
@@ -32,5 +37,4 @@ private:
 	QMatrix4x4 cameraMatrix;
 
 	Player* player;
-	Shader* shader;
 };

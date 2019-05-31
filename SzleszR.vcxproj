@@ -126,8 +126,9 @@
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\simple.frag" />
-    <None Include="Resources\Shaders\simple.vert" />
+    <None Include="Resources\Shaders\simpleColored.frag" />
+    <None Include="Resources\Shaders\simpleTextured.frag" />
+    <None Include="Resources\Shaders\simpleModel.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
