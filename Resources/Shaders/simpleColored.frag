@@ -26,7 +26,7 @@ void main()
 vec4 calculateLight(vec3 toLightVector,vec3 lightColor)
 {
 	vec3 unitSurfaceNormal = normalize(surfaceNormal);
-	vec3 unitToLightVector = normalize(toLightVector);
+	vec3 unitToLightVector = normalize(-toLightVector);
 	
 	float attenuation = 1.0/ (1.0 + 0.1*pow(length(toLightVector),2));
 

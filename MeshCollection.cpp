@@ -162,6 +162,10 @@ void MeshCollection::InitializeRawModel(std::string path, ModelType modelType)
 		}
 	}
 
+	if (modelType == ModelType::Terrain)
+		for (auto& vertex : vertices)
+			vertex.TexCoords *= 15;;
+
 	meshes[modelType] = new Mesh(vertices, basicShaderProgram);
 }
 

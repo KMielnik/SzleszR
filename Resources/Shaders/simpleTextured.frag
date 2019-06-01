@@ -23,7 +23,7 @@ void main()
 	for(int i=0;i<lightsCount;i++)
 		fColor += calculateLight(toLightVectors[i],lightsColors[i]); 
 
-	vec4 ambientLighting = vec4(0.1,0.1,0.1,1) * texture(diffuseTexture,texCoord);
+	vec4 ambientLighting = vec4(0.21,0.21,0.21,1) * texture(diffuseTexture,texCoord);
 	fColor = ambientLighting + min(fColor,vec4(1,1,1,1));
 }
 
