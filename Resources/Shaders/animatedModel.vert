@@ -3,8 +3,9 @@ layout(location = 0) in vec3 defaultPosition;
 layout(location = 1) in vec3 normals;
 layout(location = 2) in vec2 texcoords;
 layout(location = 3) in vec3 windupPosition;
-layout(location = 4) in vec3 attackingPosition;
-layout(location = 5) in vec3 cooldownPosition;
+layout(location = 4) in vec3 attackingShortPosition;
+layout(location = 5) in vec3 attackingLongPosition;
+layout(location = 6) in vec3 cooldownPosition;
 
 
 uniform mat4 modelTransformations;
@@ -32,8 +33,9 @@ void main()
 	{
 		case 0: position = defaultPosition; break;
 		case 1: position = windupPosition; break;
-		case 2: position = attackingPosition; break;
-		case 3: position = cooldownPosition; break;
+		case 2: position = attackingShortPosition; break;
+		case 3: position = attackingLongPosition; break;
+		case 4: position = cooldownPosition; break;
 	}
 
 	vec3 previousPosition;
@@ -41,8 +43,9 @@ void main()
 	{
 		case 0: previousPosition = defaultPosition; break;
 		case 1: previousPosition = windupPosition; break;
-		case 2: previousPosition = attackingPosition; break;
-		case 3: previousPosition = cooldownPosition; break;
+		case 2: previousPosition = attackingShortPosition; break;
+		case 3: previousPosition = attackingLongPosition; break;
+		case 4: previousPosition = cooldownPosition; break;
 	}
 
 	position = ((position*(10-framesLeft)) + (previousPosition*framesLeft))/10;

@@ -31,9 +31,13 @@ void AnimatedShader::SetVertexVBOData()
 	shaderProgram->enableAttributeArray(4);
 	shaderProgram->setAttributeBuffer(4, GL_FLOAT, sizeof(QVector3D) * 2 + sizeof(QVector2D), 3, sizeof(AnimatedVertex));
 
-	//Attacking stance position
+	//Attacking short stance position
 	shaderProgram->enableAttributeArray(3);
 	shaderProgram->setAttributeBuffer(3, GL_FLOAT, sizeof(QVector3D) * 3 + sizeof(QVector2D), 3, sizeof(AnimatedVertex));
+
+	//Attacking long stance position
+	shaderProgram->enableAttributeArray(6);
+	shaderProgram->setAttributeBuffer(6, GL_FLOAT, sizeof(QVector3D) * 5 + sizeof(QVector2D), 3, sizeof(AnimatedVertex));
 
 	//Cooldown stance position
 	shaderProgram->enableAttributeArray(5);
@@ -50,8 +54,9 @@ void AnimatedShader::SetAnimation(PlayerAnimations animation, PlayerAnimations p
 	{
 	case PlayerAnimations::Ready: animationInShader = 0; break;
 	case PlayerAnimations::Windup: animationInShader = 1;  break;
-	case PlayerAnimations::Attacking: animationInShader = 2;  break;
-	case PlayerAnimations::Cooldown: animationInShader = 3;  break;
+	case PlayerAnimations::Attacking_Short: animationInShader = 2;  break;
+	case PlayerAnimations::Attacking_Long: animationInShader = 3;  break;
+	case PlayerAnimations::Cooldown: animationInShader = 4;  break;
 	default:  animationInShader = 0;
 	}
 
@@ -61,8 +66,9 @@ void AnimatedShader::SetAnimation(PlayerAnimations animation, PlayerAnimations p
 	{
 	case PlayerAnimations::Ready: previousAnimationInShader = 0; break;
 	case PlayerAnimations::Windup: previousAnimationInShader = 1;  break;
-	case PlayerAnimations::Attacking: previousAnimationInShader = 2;  break;
-	case PlayerAnimations::Cooldown: previousAnimationInShader = 3;  break;
+	case PlayerAnimations::Attacking_Short: previousAnimationInShader = 2;  break;
+	case PlayerAnimations::Attacking_Long: previousAnimationInShader = 3;  break;
+	case PlayerAnimations::Cooldown: previousAnimationInShader = 4;  break;
 	default:  previousAnimationInShader = 0;
 	}
 

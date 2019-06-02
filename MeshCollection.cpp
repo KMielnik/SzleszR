@@ -289,8 +289,8 @@ void MeshCollection::InitializeRawModelWithAnimations(std::string path, ModelTyp
 		}
 	}
 
-	//attack positions
-	scene = importer.ReadFile(path + "_attack.obj", aiProcess_Triangulate | aiProcess_FlipUVs);
+	//attack short positions
+	scene = importer.ReadFile(path + "_attack_short.obj", aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -305,7 +305,32 @@ void MeshCollection::InitializeRawModelWithAnimations(std::string path, ModelTyp
 		//vertices
 		for (auto i = 0; i < mesh->mNumVertices; i++)
 		{
-			aVertices[x++].AttackPosition = QVector3D(
+			aVertices[x++].AttackShortPosition = QVector3D(
+				mesh->mVertices[i].x,
+				mesh->mVertices[i].y,
+				mesh->mVertices[i].z
+			);
+
+		}
+	}
+
+	//attack short positions
+	scene = importer.ReadFile(path + "_attack_long.obj", aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		qDebug() << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+		return;
+	}
+	x = 0;
+	for (int i = 0; i < scene->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[i];
+
+		//vertices
+		for (auto i = 0; i < mesh->mNumVertices; i++)
+		{
+			aVertices[x++].AttackLongPosition = QVector3D(
 				mesh->mVertices[i].x,
 				mesh->mVertices[i].y,
 				mesh->mVertices[i].z

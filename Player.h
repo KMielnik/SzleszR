@@ -25,7 +25,7 @@ public:
 	bool CheckCollision(Entity* entity) override;
 	QVector3D GetColor();
 
-
+	
 
 	void Draw() override;
 	

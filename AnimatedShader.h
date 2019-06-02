@@ -5,7 +5,8 @@ enum class PlayerAnimations
 {
 	Ready,
 	Windup,
-	Attacking,
+	Attacking_Short,
+	Attacking_Long,
 	Cooldown
 };
 

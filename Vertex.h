@@ -15,6 +15,7 @@ struct AnimatedVertex
 	QVector3D Normal;
 	QVector2D TexCoords;
 	QVector3D WindupPosition;
-	QVector3D AttackPosition;
+	QVector3D AttackShortPosition;
+	QVector3D AttackLongPosition;
 	QVector3D CooldownPosition;
 };

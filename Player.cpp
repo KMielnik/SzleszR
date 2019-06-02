@@ -24,7 +24,7 @@ void Player::ShortAttack()
 	{
 		attackingFramesLeft = shortAttackFrames;
 		actualAttack = AttackTypes::Short;
-		changeAnimation(PlayerAnimations::Attacking);
+		changeAnimation(PlayerAnimations::Attacking_Short);
 	}
 }
 
@@ -34,7 +34,7 @@ void Player::LongAttack()
 	{
 		attackingFramesLeft = longAttackFrames;
 		actualAttack = AttackTypes::Long;
-		changeAnimation(PlayerAnimations::Attacking);
+		changeAnimation(PlayerAnimations::Attacking_Long);
 	}
 }
 
@@ -52,7 +52,7 @@ Player::AttackTypes Player::isAttacking()
 		if (attackingFramesLeft < (shortAttackFrames * 0.15) || attackingFramesLeft >(shortAttackFrames * 0.85))
 			return AttackTypes::NoAttack;
 	case AttackTypes::Long: 
-		if (attackingFramesLeft < (longAttackFrames * 0.15) || attackingFramesLeft >(longAttackFrames * 0.85))
+		if (attackingFramesLeft < (longAttackFrames * 0.2) || attackingFramesLeft >(longAttackFrames * 0.8))
 			return AttackTypes::NoAttack;
 	case AttackTypes::Super: break;
 	}
@@ -70,7 +70,7 @@ void Player::PerformLogicStep()
 			changeAnimation(PlayerAnimations::Cooldown);
 
 	if (actualAttack == AttackTypes::Long)
-		if (abs(attackingFramesLeft - (longAttackFrames * 0.15)) < 1)
+		if (abs(attackingFramesLeft - (longAttackFrames * 0.2)) < 1)
 			changeAnimation(PlayerAnimations::Cooldown);
 
 	if (actualAttack == AttackTypes::Short)
@@ -78,7 +78,7 @@ void Player::PerformLogicStep()
 			changeAnimation(PlayerAnimations::Windup);
 
 	if (actualAttack == AttackTypes::Long)
-		if (abs(attackingFramesLeft - (longAttackFrames * 0.85)) < 1)
+		if (abs(attackingFramesLeft - (longAttackFrames * 0.8)) < 1)
 			changeAnimation(PlayerAnimations::Windup);
 
 	if (attackingFramesLeft == 0)
@@ -122,7 +122,7 @@ bool Player::CheckCollision(Entity* entity)
 			QVector3D v = enemy->position - position;
 			float d = v.length();
 
-			if (d < (attackRadius + enemy->attackRadius))
+			if (d < ((attackRadius + enemy->attackRadius)*1.5))
 			{
 				HP -= 15;
 				enemy->stopAttack();
@@ -138,13 +138,11 @@ bool Player::CheckCollision(Entity* entity)
 QVector3D Player::GetColor()
 {
 	if (isAttacking() == AttackTypes::Short)
-	{
-		return HP*QVector3D(0, 1, 0)/100;
-	}
-	else if (isAttacking() == AttackTypes::Long)
+		return HP * QVector3D(0, 1, 0) / 100;
+	if (isAttacking() == AttackTypes::Long)
 		return HP * QVector3D(0.5, 0, 0) / 100;
-	else
-		return HP*color/100;
+	return HP*color/100;
+
 }
 
 void Player::Draw()
@@ -176,7 +174,7 @@ void Player::stopAttack()
 		changeAnimation(PlayerAnimations::Cooldown);
 		break;
 	case AttackTypes::Long:
-		attackingFramesLeft = 100;
+		attackingFramesLeft = 150;
 		changeAnimation(PlayerAnimations::Cooldown);
 		break;
 	case AttackTypes::Super: break;
