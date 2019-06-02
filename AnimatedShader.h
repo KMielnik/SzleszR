@@ -20,11 +20,13 @@ public:
 	}
 
 	void CompileShader() override;
-	void SetAnimation(PlayerAnimations animation);
+	void SetAnimation(PlayerAnimations animation, PlayerAnimations previousAnimation, int framesLeft);
 	void bindUniformLocations() override;
 
 	void SetVertexVBOData() override;
 private:
 	PlayerAnimations actualAnimation;
 	int actualAnimationLoc = 0;
+	int previousAnimationLoc=0;
+	int framesLeftLoc=0;
 };

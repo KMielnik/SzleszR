@@ -17,6 +17,8 @@ uniform vec3 lightsPosition[MAX_LIGHTS];
 uniform int lightsCount;
 
 uniform int actualAnimation;
+uniform int previousAnimation;
+uniform int framesLeft;
 
 out vec2 texCoord;
 out vec3 surfaceNormal;
@@ -26,7 +28,6 @@ out vec3 toCameraVector;
 void main()
 {
 	vec3 position;
-
 	switch(actualAnimation)
 	{
 		case 0: position = defaultPosition; break;
@@ -34,6 +35,17 @@ void main()
 		case 2: position = attackingPosition; break;
 		case 3: position = cooldownPosition; break;
 	}
+
+	vec3 previousPosition;
+	switch(previousAnimation)
+	{
+		case 0: previousPosition = defaultPosition; break;
+		case 1: previousPosition = windupPosition; break;
+		case 2: previousPosition = attackingPosition; break;
+		case 3: previousPosition = cooldownPosition; break;
+	}
+
+	position = ((position*(10-framesLeft)) + (previousPosition*framesLeft))/10;
 	vec4 worldPosition = modelTransformations * vec4(position,1.0);
 
 	gl_Position = projectionMatrix * cameraMatrix * worldPosition;

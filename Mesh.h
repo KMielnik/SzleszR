@@ -32,7 +32,7 @@ class PlayerMesh : public Mesh
 {
 public:
 	PlayerMesh(std::vector<AnimatedVertex> aVertices, Shader* shaderProgram);
-	void Draw() override;
+	void Draw(PlayerAnimations animation, PlayerAnimations previousAnimation,int framesLeft);
 private:
 	std::vector<AnimatedVertex> vertices;
 	AnimatedShader* shader;

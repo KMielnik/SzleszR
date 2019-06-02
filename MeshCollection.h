@@ -35,6 +35,7 @@ public:
 	void InitializeModel(ModelType modelType);
 	void InitializeTexture(ModelTexture modelTexture);
 	void Draw(ModelType modelType, ModelTexture modelTexture, QMatrix4x4 transformations);
+	void Draw(ModelType modelType, ModelTexture modelTexture, QMatrix4x4 transformations, PlayerAnimations animation, PlayerAnimations previousAnimation, int framesLeft);
 	void Draw(ModelType modelType, QVector3D color, QMatrix4x4 transformations);
 	~MeshCollection();
 	static MeshCollection* GetInstance();

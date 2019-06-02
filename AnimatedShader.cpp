@@ -28,19 +28,19 @@ void AnimatedShader::SetVertexVBOData()
 	shaderProgram->setAttributeBuffer(2, GL_FLOAT, sizeof(QVector3D) * 2, 2, sizeof(AnimatedVertex));
 
 	//windup stance position
-	shaderProgram->enableAttributeArray(3);
-	shaderProgram->setAttributeBuffer(3, GL_FLOAT, sizeof(QVector3D) * 2 + sizeof(QVector2D), 3, sizeof(AnimatedVertex));
+	shaderProgram->enableAttributeArray(4);
+	shaderProgram->setAttributeBuffer(4, GL_FLOAT, sizeof(QVector3D) * 2 + sizeof(QVector2D), 3, sizeof(AnimatedVertex));
 
 	//Attacking stance position
-	shaderProgram->enableAttributeArray(4);
-	shaderProgram->setAttributeBuffer(4, GL_FLOAT, sizeof(QVector3D) * 3 + sizeof(QVector2D), 3, sizeof(AnimatedVertex));
+	shaderProgram->enableAttributeArray(3);
+	shaderProgram->setAttributeBuffer(3, GL_FLOAT, sizeof(QVector3D) * 3 + sizeof(QVector2D), 3, sizeof(AnimatedVertex));
 
 	//Cooldown stance position
 	shaderProgram->enableAttributeArray(5);
 	shaderProgram->setAttributeBuffer(5, GL_FLOAT, sizeof(QVector3D) * 4 + sizeof(QVector2D), 3, sizeof(AnimatedVertex));
 }
 
-void AnimatedShader::SetAnimation(PlayerAnimations animation)
+void AnimatedShader::SetAnimation(PlayerAnimations animation, PlayerAnimations previousAnimation,int framesLeft)
 {
 	actualAnimation = animation;
 
@@ -52,14 +52,29 @@ void AnimatedShader::SetAnimation(PlayerAnimations animation)
 	case PlayerAnimations::Windup: animationInShader = 1;  break;
 	case PlayerAnimations::Attacking: animationInShader = 2;  break;
 	case PlayerAnimations::Cooldown: animationInShader = 3;  break;
-	default:  animationInShader = 0; ;
+	default:  animationInShader = 0;
+	}
+
+	int previousAnimationInShader;
+
+	switch (previousAnimation)
+	{
+	case PlayerAnimations::Ready: previousAnimationInShader = 0; break;
+	case PlayerAnimations::Windup: previousAnimationInShader = 1;  break;
+	case PlayerAnimations::Attacking: previousAnimationInShader = 2;  break;
+	case PlayerAnimations::Cooldown: previousAnimationInShader = 3;  break;
+	default:  previousAnimationInShader = 0;
 	}
 
 	shaderProgram->setUniformValue(actualAnimationLoc, animationInShader);
+	shaderProgram->setUniformValue(previousAnimationLoc, previousAnimationInShader);
+	shaderProgram->setUniformValue(framesLeftLoc, framesLeft);
 }
 
 void AnimatedShader::bindUniformLocations()
 {
 	Shader::bindUniformLocations();
 	actualAnimationLoc = shaderProgram->uniformLocation("actualAnimation");
+	previousAnimationLoc = shaderProgram->uniformLocation("previousAnimation");
+	framesLeftLoc = shaderProgram->uniformLocation("framesLeft");
 }

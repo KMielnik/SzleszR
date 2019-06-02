@@ -24,6 +24,10 @@ public:
 	void PerformLogicStep() override;
 	bool CheckCollision(Entity* entity) override;
 	QVector3D GetColor();
+
+
+
+	void Draw() override;
 	
 private:
 	int HP = 100;
@@ -32,6 +36,11 @@ private:
 	float shortAttackFrames = 70;
 	float longAttackFrames = 170;
 	AttackTypes actualAttack;
+
+	void changeAnimation(PlayerAnimations newAnimation);
+	PlayerAnimations currentAnimation;
+	PlayerAnimations previousAnimation;
+	int previousAnimationFramesLeft=0;
 	int attackingFramesLeft=0;
 	QVector3D color;
 

@@ -62,9 +62,9 @@ PlayerMesh::PlayerMesh(std::vector<AnimatedVertex> vertices, Shader* shaderProgr
 	this->shader = static_cast<AnimatedShader*>(shaderProgram);
 }
 
-void PlayerMesh::Draw()
+void PlayerMesh::Draw(PlayerAnimations animation, PlayerAnimations previousAnimation, int framesLeft)
 {
-	shader->SetAnimation(PlayerAnimations::Ready);
+	shader->SetAnimation(animation,previousAnimation,framesLeft);
 	VAOBinder->rebind();
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 }

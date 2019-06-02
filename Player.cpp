@@ -24,6 +24,7 @@ void Player::ShortAttack()
 	{
 		attackingFramesLeft = shortAttackFrames;
 		actualAttack = AttackTypes::Short;
+		changeAnimation(PlayerAnimations::Attacking);
 	}
 }
 
@@ -33,6 +34,7 @@ void Player::LongAttack()
 	{
 		attackingFramesLeft = longAttackFrames;
 		actualAttack = AttackTypes::Long;
+		changeAnimation(PlayerAnimations::Attacking);
 	}
 }
 
@@ -50,7 +52,7 @@ Player::AttackTypes Player::isAttacking()
 		if (attackingFramesLeft < (shortAttackFrames * 0.15) || attackingFramesLeft >(shortAttackFrames * 0.85))
 			return AttackTypes::NoAttack;
 	case AttackTypes::Long: 
-		if (attackingFramesLeft < (longAttackFrames * 0.25) || attackingFramesLeft >(longAttackFrames * 0.75))
+		if (attackingFramesLeft < (longAttackFrames * 0.15) || attackingFramesLeft >(longAttackFrames * 0.85))
 			return AttackTypes::NoAttack;
 	case AttackTypes::Super: break;
 	}
@@ -62,10 +64,33 @@ void Player::PerformLogicStep()
 	Entity::PerformLogicStep();
 	if(attackingFramesLeft>0)
 		attackingFramesLeft--;
+
+	if (actualAttack == AttackTypes::Short)
+		if (abs(attackingFramesLeft - (shortAttackFrames * 0.15)) < 1)
+			changeAnimation(PlayerAnimations::Cooldown);
+
+	if (actualAttack == AttackTypes::Long)
+		if (abs(attackingFramesLeft - (longAttackFrames * 0.15)) < 1)
+			changeAnimation(PlayerAnimations::Cooldown);
+
+	if (actualAttack == AttackTypes::Short)
+		if (abs(attackingFramesLeft - (shortAttackFrames * 0.85)) < 1)
+			changeAnimation(PlayerAnimations::Windup);
+
+	if (actualAttack == AttackTypes::Long)
+		if (abs(attackingFramesLeft - (longAttackFrames * 0.85)) < 1)
+			changeAnimation(PlayerAnimations::Windup);
+
 	if (attackingFramesLeft == 0)
+	{
 		actualAttack = AttackTypes::NoAttack;
+		changeAnimation(PlayerAnimations::Ready);
+	}
 
 	if (HP < 0) HP = 0;
+
+	if (previousAnimationFramesLeft > 0)
+		previousAnimationFramesLeft--;
 }
 
 bool Player::CheckCollision(Entity* entity)
@@ -122,15 +147,37 @@ QVector3D Player::GetColor()
 		return HP*color/100;
 }
 
+void Player::Draw()
+{
+	QMatrix4x4 transformations = initialTransformation;
+	transformations.translate(position);
+	transformations.rotate(rotation);
+
+	meshCollection->Draw(modelType, modelTexture,
+		transformations,currentAnimation,previousAnimation,previousAnimationFramesLeft);
+}
+
+void Player::changeAnimation(PlayerAnimations newAnimation)
+{
+	if (currentAnimation != newAnimation)
+	{
+		previousAnimation = currentAnimation;
+		currentAnimation = newAnimation;
+		previousAnimationFramesLeft = 10;
+	}
+}
+
 void Player::stopAttack()
 {
 	switch(actualAttack)
 	{
 	case AttackTypes::Short:
-		attackingFramesLeft = 40; 
+		attackingFramesLeft = 40;
+		changeAnimation(PlayerAnimations::Cooldown);
 		break;
 	case AttackTypes::Long:
 		attackingFramesLeft = 100;
+		changeAnimation(PlayerAnimations::Cooldown);
 		break;
 	case AttackTypes::Super: break;
 	default: ;

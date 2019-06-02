@@ -68,17 +68,8 @@ void MeshCollection::InitializeTexture(ModelTexture modelTexture)
 
 void MeshCollection::Draw(ModelType modelType, ModelTexture modelTexture, QMatrix4x4 transformations)
 {
-	if (modelType == ModelType::Robot)
-	{
-		animatedShaderProgram->Bind();
-		animatedShaderProgram->LoadModelTransformationsMatrix(transformations);
-	}
-	else
-	{
-		basicShaderProgram->Bind();
-		basicShaderProgram->LoadModelTransformationsMatrix(transformations);
-	}
-	
+	basicShaderProgram->Bind();
+	basicShaderProgram->LoadModelTransformationsMatrix(transformations);
 
 	if (textures.find(modelTexture) != textures.end())
 	{
@@ -86,10 +77,7 @@ void MeshCollection::Draw(ModelType modelType, ModelTexture modelTexture, QMatri
 		textures[modelTexture]->diffuse->bind();
 		glFunc->glActiveTexture(GL_TEXTURE1);
 		textures[modelTexture]->specular->bind();
-		if (modelType == ModelType::Robot)
-			animatedShaderProgram->LoadShineDamper(textures[modelTexture]->shineDamper);
-		else
-			basicShaderProgram->LoadShineDamper(textures[modelTexture]->shineDamper);
+		basicShaderProgram->LoadShineDamper(textures[modelTexture]->shineDamper);
 
 	}
 	else
@@ -97,6 +85,35 @@ void MeshCollection::Draw(ModelType modelType, ModelTexture modelTexture, QMatri
 
 	if (meshes.find(modelType) != meshes.end())
 		meshes[modelType]->Draw();
+	else
+		qDebug() << "ERROR: Tried to use unitialized mesh.";
+
+	textures[modelTexture]->specular->release();
+	textures[modelTexture]->diffuse->release();
+}
+
+void MeshCollection::Draw(ModelType modelType, ModelTexture modelTexture, QMatrix4x4 transformations, PlayerAnimations animation, PlayerAnimations previousAnimation,int framesLeft)
+{
+	animatedShaderProgram->Bind();
+	animatedShaderProgram->LoadModelTransformationsMatrix(transformations);
+
+
+	if (textures.find(modelTexture) != textures.end())
+	{
+		glFunc->glActiveTexture(GL_TEXTURE0);
+		textures[modelTexture]->diffuse->bind();
+		glFunc->glActiveTexture(GL_TEXTURE1);
+		textures[modelTexture]->specular->bind();
+
+		animatedShaderProgram->LoadShineDamper(textures[modelTexture]->shineDamper);
+
+
+	}
+	else
+		qDebug() << "ERROR: Tried to use unitialized texture.";
+
+	if (meshes.find(modelType) != meshes.end())
+		static_cast<PlayerMesh*>(meshes[modelType])->Draw(animation,previousAnimation,framesLeft);
 	else
 		qDebug() << "ERROR: Tried to use unitialized mesh.";
 
@@ -208,11 +225,6 @@ void MeshCollection::InitializeRawModelWithAnimations(std::string path, ModelTyp
 		for (auto i = 0; i < mesh->mNumVertices; i++)
 		{
 			AnimatedVertex aVertex;
-			aVertex.DefaultPosition = QVector3D(
-				mesh->mVertices[i].x,
-				mesh->mVertices[i].y,
-				mesh->mVertices[i].z
-			);
 			aVertex.Normal = QVector3D(
 				mesh->mNormals[i].x,
 				mesh->mNormals[i].y,
@@ -227,8 +239,8 @@ void MeshCollection::InitializeRawModelWithAnimations(std::string path, ModelTyp
 		}
 	}
 
-	//cooldown positions
-	scene = importer.ReadFile(path + "a.fbx", aiProcess_Triangulate | aiProcess_FlipUVs);
+	//default positions
+	scene = importer.ReadFile(path + "_default.obj", aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -243,17 +255,42 @@ void MeshCollection::InitializeRawModelWithAnimations(std::string path, ModelTyp
 		//vertices
 		for (auto i = 0; i < mesh->mNumVertices; i++)
 		{
-			aVertices[x++].CoolDownPosition = QVector3D(
-				mesh->mVertices[i].x/1.3,
-				mesh->mVertices[i].y/1.3,
-				mesh->mVertices[i].z/1.3
+			aVertices[x++].DefaultPosition = QVector3D(
+				mesh->mVertices[i].x,
+				mesh->mVertices[i].y,
+				mesh->mVertices[i].z
+			);
+
+		}
+	}
+
+	//windup positions
+	scene = importer.ReadFile(path + "_windup.obj", aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		qDebug() << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+		return;
+	}
+	x = 0;
+	for (int i = 0; i < scene->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[i];
+
+		//vertices
+		for (auto i = 0; i < mesh->mNumVertices; i++)
+		{
+			aVertices[x++].WindupPosition = QVector3D(
+				mesh->mVertices[i].x,
+				mesh->mVertices[i].y,
+				mesh->mVertices[i].z
 			);
 
 		}
 	}
 
 	//attack positions
-	scene = importer.ReadFile(path + "a.fbx", aiProcess_Triangulate | aiProcess_FlipUVs);
+	scene = importer.ReadFile(path + "_attack.obj", aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -269,9 +306,34 @@ void MeshCollection::InitializeRawModelWithAnimations(std::string path, ModelTyp
 		for (auto i = 0; i < mesh->mNumVertices; i++)
 		{
 			aVertices[x++].AttackPosition = QVector3D(
-				mesh->mVertices[i].x*1.3,
-				mesh->mVertices[i].y*1.3,
-				mesh->mVertices[i].z*1.3
+				mesh->mVertices[i].x,
+				mesh->mVertices[i].y,
+				mesh->mVertices[i].z
+			);
+
+		}
+	}
+
+	//cooldown positions
+	scene = importer.ReadFile(path + "_cooldown.obj", aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		qDebug() << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+		return;
+	}
+	x = 0;
+	for (int i = 0; i < scene->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[i];
+
+		//vertices
+		for (auto i = 0; i < mesh->mNumVertices; i++)
+		{
+			aVertices[x++].CooldownPosition = QVector3D(
+				mesh->mVertices[i].x,
+				mesh->mVertices[i].y,
+				mesh->mVertices[i].z
 			);
 
 		}
