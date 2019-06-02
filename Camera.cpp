@@ -34,8 +34,6 @@ void Camera::SetPlayer(Player* player)
 
 void Camera::LoadCamera(Shader *shader)
 {
-	shader->LoadCameraMatrix(cameraMatrix);
-	shader->LoadProjectionMatrix(projectionMatrix);
 }
 
 void Camera::ChangePitch(float mouseYAxis)

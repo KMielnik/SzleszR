@@ -98,7 +98,9 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimatedShader.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ColorShader.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -109,12 +111,15 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="TexturedShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="GameWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimatedShader.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ColorShader.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Entity.h" />
@@ -123,6 +128,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Terrain.h" />
+    <ClInclude Include="TexturedShader.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>

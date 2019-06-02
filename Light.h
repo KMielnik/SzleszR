@@ -1,6 +1,8 @@
 #pragma once
 #include <QVector3D>
 
+#define MAX_LIGHTS 10
+
 class Light
 {
 public:

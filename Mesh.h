@@ -7,6 +7,7 @@
 #include <QVector2D>
 #include "Shader.h"
 #include "Vertex.h"
+#include "AnimatedShader.h"
 
 
 class Mesh

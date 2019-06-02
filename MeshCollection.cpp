@@ -1,11 +1,16 @@
 #include "MeshCollection.h"
 #include <QDebug>
 
+
 void MeshCollection::Initialize(QMatrix4x4* projectionMatrix, QMatrix4x4* cameraMatrix, std::vector<Light*>* lights)
 {
-	this->basicShaderProgram = new Shader(projectionMatrix, cameraMatrix, lights);
+	this->basicShaderProgram = new TexturedShader(projectionMatrix, cameraMatrix, lights);
 	this->colorShaderProgram = new ColorShader(projectionMatrix, cameraMatrix, lights);
 	this->animatedShaderProgram = new AnimatedShader(projectionMatrix, cameraMatrix, lights);
+
+	basicShaderProgram->CompileShader();
+	colorShaderProgram->CompileShader();
+	animatedShaderProgram->CompileShader();
 
 	glFunc = QOpenGLContext::currentContext()->functions();
 }

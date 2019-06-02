@@ -6,7 +6,8 @@
 #include "Mesh.h"
 #include <QOpenGLTexture>
 #include <QOpenGLFunctions>
-#include "Shader.h"
+#include "TexturedShader.h"
+#include "ColorShader.h"
 
 struct Texture
 {
