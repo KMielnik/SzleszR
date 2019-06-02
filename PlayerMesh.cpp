@@ -1,28 +1,22 @@
-﻿#include "Mesh.h"
-#include <QDebug>
+#include "PlayerMesh.h"
 
-void Mesh::Draw(PlayerAnimations cheat)
+PlayerMesh::PlayerMesh(std::vector<AnimatedVertex> vertices, Shader* shaderProgram)
 {
+	this->vertices = vertices;
+	this->shaderProgram = dynamic_cast<AnimatedShader*>(shaderProgram);
+
+	PlayerMesh::setMeshVAOVBO();
+}
+
+void PlayerMesh::Draw(PlayerAnimations animation)
+{
+	shaderProgram->SetAnimation(animation);
+
 	VAOBinder->rebind();
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 }
 
-Mesh::Mesh(std::vector<Vertex> vertices, Shader* shaderProgram)
-{
-	this->vertices = vertices;
-	this->shaderProgram = shaderProgram;
-
-	Mesh::setMeshVAOVBO();
-}
-
-Mesh::~Mesh()
-{
-	VBO->destroy();
-	delete VBO;
-	delete VAOBinder;
-}
-
-void Mesh::setMeshVAOVBO()
+void PlayerMesh::setMeshVAOVBO()
 {
 	VAO.create();
 	VAO.bind();
