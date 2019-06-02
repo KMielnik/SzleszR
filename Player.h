@@ -7,11 +7,20 @@
 class Player : public Entity
 {
 public:
+	enum class AttackTypes
+	{
+		NoAttack,
+		Short,
+		Long,
+		Super
+	};
 	~Player() override;
 	Player(MeshCollection::ModelTexture modelTexture);
-	void Attack();
+	void ShortAttack();
+	void LongAttack();
+	void SuperAttack();
 
-	bool isAttacking();
+	AttackTypes isAttacking();
 	void PerformLogicStep() override;
 	bool CheckCollision(Entity* entity) override;
 	QVector3D GetColor();
@@ -19,6 +28,12 @@ public:
 private:
 	int HP = 100;
 	float attackRadius = 1.5f;
+
+	float shortAttackFrames = 70;
+	float longAttackFrames = 170;
+	AttackTypes actualAttack;
 	int attackingFramesLeft=0;
 	QVector3D color;
+
+	void stopAttack();
 };

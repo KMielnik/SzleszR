@@ -8,3 +8,13 @@ struct Vertex
 	QVector3D Normal;
 	QVector2D TexCoords;
 };
+
+struct AnimatedVertex
+{
+	QVector3D DefaultPosition;
+	QVector3D Normal;
+	QVector2D TexCoords;
+	QVector3D CoolDownPosition;
+	QVector3D AttackPosition;
+
+};

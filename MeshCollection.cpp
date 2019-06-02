@@ -5,6 +5,7 @@ void MeshCollection::Initialize(QMatrix4x4* projectionMatrix, QMatrix4x4* camera
 {
 	this->basicShaderProgram = new Shader(projectionMatrix, cameraMatrix, lights);
 	this->colorShaderProgram = new ColorShader(projectionMatrix, cameraMatrix, lights);
+	this->animatedShaderProgram = new AnimatedShader(projectionMatrix, cameraMatrix, lights);
 
 	glFunc = QOpenGLContext::currentContext()->functions();
 }
@@ -17,7 +18,7 @@ void MeshCollection::InitializeModel(ModelType modelType)
 	switch (modelType)
 	{
 	case ModelType::Robot:
-		InitializeRawModel("Resources/Models/robot.fbx", modelType);
+		InitializeRawModelWithAnimations("Resources/Models/robot", modelType);
 		qDebug() << "Initialized model: Robot";
 		break;
 	case ModelType::Terrain:
@@ -62,8 +63,17 @@ void MeshCollection::InitializeTexture(ModelTexture modelTexture)
 
 void MeshCollection::Draw(ModelType modelType, ModelTexture modelTexture, QMatrix4x4 transformations)
 {
-	basicShaderProgram->Bind();
-	basicShaderProgram->LoadModelTransformationsMatrix(transformations);
+	if (modelType == ModelType::Robot)
+	{
+		animatedShaderProgram->Bind();
+		animatedShaderProgram->LoadModelTransformationsMatrix(transformations);
+	}
+	else
+	{
+		basicShaderProgram->Bind();
+		basicShaderProgram->LoadModelTransformationsMatrix(transformations);
+	}
+	
 
 	if (textures.find(modelTexture) != textures.end())
 	{
@@ -71,7 +81,11 @@ void MeshCollection::Draw(ModelType modelType, ModelTexture modelTexture, QMatri
 		textures[modelTexture]->diffuse->bind();
 		glFunc->glActiveTexture(GL_TEXTURE1);
 		textures[modelTexture]->specular->bind();
-		basicShaderProgram->LoadShineDamper(textures[modelTexture]->shineDamper);
+		if (modelType == ModelType::Robot)
+			animatedShaderProgram->LoadShineDamper(textures[modelTexture]->shineDamper);
+		else
+			basicShaderProgram->LoadShineDamper(textures[modelTexture]->shineDamper);
+
 	}
 	else
 		qDebug() << "ERROR: Tried to use unitialized texture.";
@@ -167,6 +181,99 @@ void MeshCollection::InitializeRawModel(std::string path, ModelType modelType)
 			vertex.TexCoords *= 15;;
 
 	meshes[modelType] = new Mesh(vertices, basicShaderProgram);
+}
+
+void MeshCollection::InitializeRawModelWithAnimations(std::string path, ModelType modelType)
+{
+	const aiScene* scene = importer.ReadFile(path+".fbx", aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		qDebug() << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+		return;
+	}
+
+	std::vector<AnimatedVertex> aVertices;
+
+	for (int i = 0; i < scene->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[i];
+
+		//vertices
+		for (auto i = 0; i < mesh->mNumVertices; i++)
+		{
+			AnimatedVertex aVertex;
+			aVertex.DefaultPosition = QVector3D(
+				mesh->mVertices[i].x,
+				mesh->mVertices[i].y,
+				mesh->mVertices[i].z
+			);
+			aVertex.Normal = QVector3D(
+				mesh->mNormals[i].x,
+				mesh->mNormals[i].y,
+				mesh->mNormals[i].z
+			);
+
+			aVertex.TexCoords = QVector2D(
+				mesh->mTextureCoords[0][i].x,
+				mesh->mTextureCoords[0][i].y
+			);
+			aVertices.push_back(aVertex);
+		}
+	}
+
+	//cooldown positions
+	scene = importer.ReadFile(path + "a.fbx", aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		qDebug() << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+		return;
+	}
+	int x = 0;
+	for (int i = 0; i < scene->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[i];
+
+		//vertices
+		for (auto i = 0; i < mesh->mNumVertices; i++)
+		{
+			aVertices[x++].CoolDownPosition = QVector3D(
+				mesh->mVertices[i].x/1.3,
+				mesh->mVertices[i].y/1.3,
+				mesh->mVertices[i].z/1.3
+			);
+
+		}
+	}
+
+	//attack positions
+	scene = importer.ReadFile(path + "a.fbx", aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		qDebug() << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+		return;
+	}
+	 x = 0;
+	for (int i = 0; i < scene->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[i];
+
+		//vertices
+		for (auto i = 0; i < mesh->mNumVertices; i++)
+		{
+			aVertices[x++].AttackPosition = QVector3D(
+				mesh->mVertices[i].x*1.3,
+				mesh->mVertices[i].y*1.3,
+				mesh->mVertices[i].z*1.3
+			);
+
+		}
+	}
+
+	meshes[modelType] = new PlayerMesh(aVertices, animatedShaderProgram);
+
 }
 
 void MeshCollection::InitializeRawTexture(std::string path, std::string fileExtension, ModelTexture modelTexture)

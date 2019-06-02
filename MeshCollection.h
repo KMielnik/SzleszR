@@ -48,8 +48,10 @@ private:
 	std::map<ModelTexture, Texture*> textures;
 	Shader* basicShaderProgram;
 	ColorShader* colorShaderProgram;
+	AnimatedShader* animatedShaderProgram;
 
 	void InitializeRawModel(std::string path, ModelType modelType);
+	void InitializeRawModelWithAnimations(std::string path, ModelType modelType);
 	void InitializeRawTexture(std::string path, std::string fileExtension, ModelTexture modelTexture);
 };
 

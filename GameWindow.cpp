@@ -11,7 +11,7 @@ GameWindow::~GameWindow()
 void GameWindow::initializeGL()
 {
 	initializeOpenGLFunctions();
-	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
 	camera = new Camera();
 
@@ -138,6 +138,8 @@ void GameWindow::MovePlayer()
 void GameWindow::keyPressEvent(QKeyEvent* e)
 {
 	pressedKeys[e->key()] = true;
+	if (e->key() == Qt::Key_Space)
+		player->LongAttack();
 }
 
 void GameWindow::keyReleaseEvent(QKeyEvent* e)
@@ -165,7 +167,7 @@ void GameWindow::wheelEvent(QWheelEvent* e)
 void GameWindow::mousePressEvent(QMouseEvent* e)
 {
 	if (e->button() == Qt::MouseButton::LeftButton)
-		player->Attack();
+		player->ShortAttack();
 	if (e->button() == Qt::MouseButton::RightButton)
 		cameraXRotation = true;
 }

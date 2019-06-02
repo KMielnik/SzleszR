@@ -19,7 +19,7 @@ public:
 	void LoadLights(std::vector<Light*> light);
 	void LoadShineDamper(float shineDamper);
 
-	void SetVertexVBOData();
+	virtual void SetVertexVBOData();
 
 protected:
 	QOpenGLShaderProgram* shaderProgram;
@@ -52,7 +52,11 @@ public:
 		shaderProgram = new QOpenGLShaderProgram();
 		shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, vertexFile.c_str());
 		shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, fragmentFile.c_str());
-	
+
+		this->projectionMatrix = projectionMatrix;
+		this->cameraMatrix = cameraMatrix;
+		this->lights = lights;
+
 		shaderProgram->link();
 		shaderProgram->bind();
 
@@ -65,4 +69,35 @@ public:
 
 private:
 	int colorLoc = 0;
+};
+
+class AnimatedShader : public Shader
+{
+public:
+	AnimatedShader(QMatrix4x4* projectionMatrix, QMatrix4x4* cameraMatrix, std::vector<Light*>* lights) : Shader(projectionMatrix, cameraMatrix, lights)
+	{
+		vertexFile = "Resources/Shaders/animatedModel.vert";
+		fragmentFile = "Resources/Shaders/simpleTextured.frag";
+
+		shaderProgram = new QOpenGLShaderProgram();
+		shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, vertexFile.c_str());
+		shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, fragmentFile.c_str());
+
+		this->projectionMatrix = projectionMatrix;
+		this->cameraMatrix = cameraMatrix;
+		this->lights = lights;
+
+		shaderProgram->link();
+		shaderProgram->bind();
+
+		AnimatedShader::bindUniformLocations();
+	}
+
+	void SetVertexVBOData() override;
+	void SetAnimation(int animation);
+	void bindUniformLocations() override;
+
+private:
+	int actualAnimation;
+	int actualAnimationLoc=0;
 };

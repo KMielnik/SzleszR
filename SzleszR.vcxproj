@@ -126,6 +126,7 @@
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\animatedModel.vert" />
     <None Include="Resources\Shaders\simpleColored.frag" />
     <None Include="Resources\Shaders\simpleTextured.frag" />
     <None Include="Resources\Shaders\simpleModel.vert" />
