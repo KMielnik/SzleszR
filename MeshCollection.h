@@ -4,7 +4,6 @@
 #include <assimp/postprocess.h>
 #include <QOpenGLShaderProgram>
 #include "Mesh.h"
-#include "PlayerMesh.h"
 #include <QOpenGLTexture>
 #include <QOpenGLFunctions>
 #include "TexturedShader.h"

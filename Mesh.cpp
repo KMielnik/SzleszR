@@ -1,7 +1,7 @@
 ﻿#include "Mesh.h"
 #include <QDebug>
 
-void Mesh::Draw(PlayerAnimations cheat)
+void Mesh::Draw()
 {
 	VAOBinder->rebind();
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
@@ -10,9 +10,24 @@ void Mesh::Draw(PlayerAnimations cheat)
 Mesh::Mesh(std::vector<Vertex> vertices, Shader* shaderProgram)
 {
 	this->vertices = vertices;
-	this->shaderProgram = shaderProgram;
 
-	Mesh::setMeshVAOVBO();
+	VAO.create();
+	VAO.bind();
+	VAOBinder = new QOpenGLVertexArrayObject::Binder(&VAO);
+
+	VBO = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+	VBO->create();
+	VBO->bind();
+	VBO->setUsagePattern(QOpenGLBuffer::StaticDraw);
+	VBO->allocate(vertices.data(), vertices.size() * sizeof(Vertex));
+
+	shaderProgram->SetVertexVBOData();
+
+	VBO->release();
+	VAOBinder->release();
+	VAO.release();
+
+	shaderProgram->Release();
 }
 
 Mesh::~Mesh()
@@ -22,8 +37,10 @@ Mesh::~Mesh()
 	delete VAOBinder;
 }
 
-void Mesh::setMeshVAOVBO()
+PlayerMesh::PlayerMesh(std::vector<AnimatedVertex> vertices, Shader* shaderProgram)
 {
+	this->vertices = vertices;
+
 	VAO.create();
 	VAO.bind();
 	VAOBinder = new QOpenGLVertexArrayObject::Binder(&VAO);
@@ -41,4 +58,13 @@ void Mesh::setMeshVAOVBO()
 	VAO.release();
 
 	shaderProgram->Release();
+
+	this->shader = static_cast<AnimatedShader*>(shaderProgram);
+}
+
+void PlayerMesh::Draw()
+{
+	shader->SetAnimation(PlayerAnimations::Ready);
+	VAOBinder->rebind();
+	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 }

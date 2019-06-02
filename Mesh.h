@@ -13,20 +13,27 @@
 class Mesh
 {
 public:
-	virtual void Draw(PlayerAnimations cheat = PlayerAnimations::Ready);
+	virtual void Draw();
 	
 	Mesh(std::vector<Vertex> vertices, Shader* shaderProgram);
-	virtual ~Mesh();
+	~Mesh();
 
 protected:
 	QOpenGLVertexArrayObject VAO;
 	QOpenGLVertexArrayObject::Binder *VAOBinder;
 	QOpenGLBuffer *VBO;
 	Mesh() = default;
-	virtual void setMeshVAOVBO();
 
 private:
 	std::vector<Vertex> vertices;
-	Shader* shaderProgram;
 };
 
+class PlayerMesh : public Mesh
+{
+public:
+	PlayerMesh(std::vector<AnimatedVertex> aVertices, Shader* shaderProgram);
+	void Draw() override;
+private:
+	std::vector<AnimatedVertex> vertices;
+	AnimatedShader* shader;
+};
