@@ -2,8 +2,9 @@
 layout(location = 0) in vec3 defaultPosition;
 layout(location = 1) in vec3 normals;
 layout(location = 2) in vec2 texcoords;
-layout(location = 3) in vec3 cooldownPosition;
-layout(location = 4) in vec3 attackPosition;
+layout(location = 3) in vec3 windupPosition;
+layout(location = 4) in vec3 attackingPosition;
+layout(location = 5) in vec3 cooldownPosition;
 
 
 uniform mat4 modelTransformations;
@@ -24,7 +25,15 @@ out vec3 toCameraVector;
 
 void main()
 {
-	vec3 position = actualAnimation==1?cooldownPosition:attackPosition;
+	vec3 position;
+
+	switch(actualAnimation)
+	{
+		case 0: position = defaultPosition; break;
+		case 1: position = windupPosition; break;
+		case 2: position = attackingPosition; break;
+		case 3: position = cooldownPosition; break;
+	}
 	vec4 worldPosition = modelTransformations * vec4(position,1.0);
 
 	gl_Position = projectionMatrix * cameraMatrix * worldPosition;

@@ -64,7 +64,7 @@ PlayerMesh::PlayerMesh(std::vector<AnimatedVertex> vertices, Shader* shaderProgr
 
 void PlayerMesh::Draw()
 {
-	shader->SetAnimation(3);
+	shader->SetAnimation(PlayerAnimations::Ready);
 	VAOBinder->rebind();
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 }

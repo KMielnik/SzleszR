@@ -1,7 +1,7 @@
 #version 420
 #define MAX_LIGHTS 10
 
-in vec2 texCoord;
+
 in vec3 surfaceNormal;
 in vec3 toLightVectors[MAX_LIGHTS];
 in vec3 toCameraVector;
@@ -26,7 +26,7 @@ void main()
 vec4 calculateLight(vec3 toLightVector,vec3 lightColor)
 {
 	vec3 unitSurfaceNormal = normalize(surfaceNormal);
-	vec3 unitToLightVector = normalize(-toLightVector);
+	vec3 unitToLightVector = normalize(toLightVector);
 	
 	float attenuation = 1.0/ (1.0 + 0.1*pow(length(toLightVector),2));
 
