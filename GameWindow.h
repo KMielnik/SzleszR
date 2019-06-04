@@ -64,8 +64,6 @@ private:
 	int id = 0;
 	std::vector<QTcpSocket*> players;
 
-	QTime lanTimer;
-
 public slots:
 	void newClient();
 	void serverGotData();

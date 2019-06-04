@@ -60,22 +60,8 @@ void GameWindow::initializeGL()
 	camera->SetPlayer(player);
 	
 	mousePosition = QPoint(size().width() / 2, size().height() / 2);
-	
 
-	
 	terrain = new Terrain();
-
-	
-	spheres.push_back(new Sphere());
-	//for(auto enemy :enemies)
-	for(int i=0;i<8;i++)
-	{
-		spheres.push_back(new Sphere());
-	}
-	for (auto sphere : spheres)
-		lights.push_back(new Light(QVector3D(0, 2, 0), QVector3D(1, 1, 1)));
-
-	lanTimer.start();
 }
 
 void GameWindow::resizeGL(int w, int h)
@@ -127,29 +113,30 @@ void GameWindow::teardownGL()
 
 void GameWindow::SetTransformations()
 {
-	int lightNO = 0;
-	//light player
-	float theta = player->GetRotation().toEulerAngles().y();
-	float offsetX = 1 * std::sin(theta * M_PI / 180)*-0.2;
-	float offsetZ = 1 * std::cos(theta * M_PI / 180)*-0.2;
-	lights[lightNO]->setPosition(player->GetPosition() + QVector3D(0 - offsetX, 4.5, 0 - offsetZ));
-	lights[lightNO]->setColor(player->GetColor());
+	std::vector<Player*> allPlayers;
+	allPlayers.push_back(player);
+	for (auto enemy : enemies)
+		allPlayers.push_back(enemy);
 
-	spheres[lightNO]->SetPosition(player->GetPosition() + QVector3D(0 - offsetX, 4.5, 0 - offsetZ));
-	spheres[lightNO]->setColor(player->GetColor());
+	int lightNO = 0;
 
 	//light enemies
-	for(auto enemy : enemies)
+	for(auto player : allPlayers)
 	{
-		lightNO++;
-		float theta = enemy->GetRotation().toEulerAngles().y();
+		if(lightNO>=lights.size())
+		{
+			spheres.push_back(new Sphere());
+			lights.push_back(new Light(QVector3D(0, 2, 0), QVector3D(1, 1, 1)));
+		}
+		float theta = player->GetRotation().toEulerAngles().y();
 		float offsetX = 1 * std::sin(theta * M_PI / 180)*-0.2;
 		float offsetZ = 1 * std::cos(theta * M_PI / 180)*-0.2;
-		lights[lightNO]->setPosition(enemy->GetPosition() + QVector3D(0 - offsetX, 4.5, 0 - offsetZ));
-		lights[lightNO]->setColor(enemy->GetColor());
+		lights[lightNO]->setPosition(player->GetPosition() + QVector3D(0 - offsetX, 4.5, 0 - offsetZ));
+		lights[lightNO]->setColor(player->GetColor());
 
-		spheres[lightNO]->SetPosition(enemy->GetPosition() + QVector3D(0 - offsetX, 4.5, 0 - offsetZ));
-		spheres[lightNO]->setColor(enemy->GetColor());
+		spheres[lightNO]->SetPosition(player->GetPosition() + QVector3D(0 - offsetX, 4.5, 0 - offsetZ));
+		spheres[lightNO]->setColor(player->GetColor());
+		lightNO++;
 	}
 
 	camera->Move();
