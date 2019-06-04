@@ -8,6 +8,42 @@ GameWindow::~GameWindow()
 	teardownGL();
 }
 
+GameWindow::GameWindow(bool isServer) : isServer(isServer)
+{
+	qDebug() << "Podlaczenie lan";
+
+	if(isServer)
+	{
+		server = new QTcpServer(this);
+
+		connect(server, SIGNAL(newConnection()), this, SLOT(newClient()));
+		qDebug() << "Server is listening: "<< server->listen(QHostAddress::Any, 12345);
+
+		players.push_back(nullptr);
+	}
+	else
+	{
+		socket = new QTcpSocket(this);
+		socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+		socket->setReadBufferSize(192);
+
+		socket->connectToHost("localhost", 12345);
+		socket->waitForConnected();
+		char buffer[8];
+		socket->waitForReadyRead();
+		socket->read(buffer, 8);
+		id = atoi(buffer);
+
+		qDebug() << "Moje id to: " << id;
+
+		connect(socket, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
+		connect(socket, SIGNAL(readyRead()), this, SLOT(clientReadyRead()));
+		connect(socket, SIGNAL(bytesWritten(qint64)), this, SLOT(clientBytesWritten(qint64)));
+
+		qDebug() << "Client connected to server: " << socket->waitForConnected(5000);
+	}
+}
+
 void GameWindow::initializeGL()
 {
 	initializeOpenGLFunctions();
@@ -19,29 +55,27 @@ void GameWindow::initializeGL()
 	meshCollection->Initialize(camera->getProjectionMatrixPointer(), camera->getCameraMatrixPointer(), &lights);
 
 	
-
-	player = new Player(MeshCollection::ModelTexture::Robot_Basic);
+	player = new Player(id,MeshCollection::ModelTexture::Robot_Basic);
+	player->SetPosition(QVector3D(1, 0, 1) * 2 * id);
 	camera->SetPlayer(player);
 	
 	mousePosition = QPoint(size().width() / 2, size().height() / 2);
 	
-	enemies.push_back(new Player(MeshCollection::ModelTexture::Robot_Red));
-	enemies.push_back(new Player(MeshCollection::ModelTexture::Robot_Red));
-	enemies.push_back(new Player(MeshCollection::ModelTexture::Robot_Red));
-	enemies[0]->SetPosition(QVector3D(0, 0, 3));
-	enemies[1]->SetPosition(QVector3D(4, 0, 3));
-	enemies[2]->SetPosition(QVector3D(-4, 0, 3));
+
 	
 	terrain = new Terrain();
 
 	
 	spheres.push_back(new Sphere());
-	for(auto enemy :enemies)
+	//for(auto enemy :enemies)
+	for(int i=0;i<8;i++)
 	{
 		spheres.push_back(new Sphere());
 	}
 	for (auto sphere : spheres)
 		lights.push_back(new Light(QVector3D(0, 2, 0), QVector3D(1, 1, 1)));
+
+	lanTimer.start();
 }
 
 void GameWindow::resizeGL(int w, int h)
@@ -59,7 +93,7 @@ void GameWindow::paintGL()
 	glEnable(GL_LIGHTING);
 	glShadeModel(GL_FLAT);
 
-	
+	SendPlayers();
 
 	MovePlayer();
 
@@ -135,6 +169,42 @@ void GameWindow::MovePlayer()
 	player->Move(QVector3D(dx, 0, dz));
 }
 
+void GameWindow::SendPlayers()
+{
+	if (isServer)
+		for (int i = 1; i < players.size(); i++)
+		{
+			for (int j = 0; j < players.size(); j++)
+			{
+				if (i == j) continue;
+				SerializedPlayer serialized_player;
+				if (player->GetID() == j)
+					player->Serialize(&serialized_player);
+				for (auto enemy : enemies)
+					if (enemy->GetID() == j)
+						enemy->Serialize(&serialized_player);
+
+				QByteArray byte_array;
+				QDataStream out(&byte_array, QIODevice::WriteOnly);
+				out << serialized_player;
+
+				players[i]->write(byte_array);
+				players[i]->flush();
+			}
+		}
+	else
+	{
+		QByteArray byte_array;
+		QDataStream out(&byte_array, QIODevice::WriteOnly);
+		SerializedPlayer serialized_player;
+		player->Serialize(&serialized_player);
+		out << serialized_player;
+
+		socket->write(byte_array);
+		socket->flush();
+	}
+}
+
 void GameWindow::keyPressEvent(QKeyEvent* e)
 {
 	pressedKeys[e->key()] = true;
@@ -182,4 +252,137 @@ void GameWindow::mouseDoubleClickEvent(QMouseEvent* e)
 {
 	if (e->button() == Qt::MouseButton::RightButton)
 		camera->ResetYaw();
+}
+
+QDataStream& operator<<(QDataStream& out, const SerializedPlayer& data)
+{
+	out << data.position;
+	out << data.id;
+	out << data.HP;
+	out << data.actualAttack;
+	out << data.attackingFramesLeft;
+	out << data.color;
+	out << static_cast<int>(data.currentAnimation);
+	out << data.force;
+	out << data.magic;
+	out << static_cast<int>(data.previousAnimation);
+	out << data.previousAnimationFramesLeft;
+	out << data.rotation;
+	out << data.simpleMovement;
+	out << static_cast<int>(data.texture);
+	return out;
+}
+
+QDataStream& operator>>(QDataStream& in, SerializedPlayer& data)
+{
+	in >> data.position;
+	in >> data.id;
+	in >> data.HP;
+	in >> data.actualAttack;
+	in >> data.attackingFramesLeft;
+	in >> data.color;
+
+	int temp;
+	in >> temp;
+	data.currentAnimation = static_cast<PlayerAnimations>(temp);
+	in >> data.force;
+	in >> data.magic;
+
+	in >> temp;
+	data.previousAnimation = static_cast<PlayerAnimations>(temp);
+	in >> data.previousAnimationFramesLeft;
+	in >> data.rotation;
+	in >> data.simpleMovement;
+	in >> temp;
+	data.texture = static_cast<MeshCollection::ModelTexture>(temp);
+	return in;
+}
+
+void GameWindow::newClient()
+{
+	players.push_back(server->nextPendingConnection());
+	players.back()->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+	connect(players.back(), SIGNAL(readyRead()), this, SLOT(serverGotData()));
+
+	qDebug() << "NOWY KLIENT, nadaje mu ID = " << ++id;
+	char buffer[8];
+	itoa(id, buffer, 10);
+	players.back()->write(buffer);
+}
+
+void GameWindow::serverGotData()
+{
+	for (auto socket : players)
+	{
+		if (socket == nullptr) continue;
+		while (socket->bytesAvailable() >= 8)
+		{
+			QByteArray bytes;
+			bytes = socket->read(156);
+			QDataStream out(&bytes, QIODevice::ReadOnly);
+			SerializedPlayer serialized_player;
+
+			out >> serialized_player;
+
+			if (serialized_player.magic != 777)
+				continue;
+
+			bool found = false;
+			for (auto enemy : enemies)
+				if (enemy->GetID() == serialized_player.id)
+				{
+					found = true;
+					enemy->Deserialize(serialized_player);
+					break;
+				}
+			if (found == false)
+			{
+				enemies.push_back(new Player(-1, MeshCollection::ModelTexture::Robot_Basic));
+				enemies.back()->Deserialize(serialized_player);
+				qDebug() << "NOWY CIOLEK" << enemies.back()->GetID();
+
+			}
+		}
+	}
+}
+
+void GameWindow::clientDisconnected()
+{
+}
+
+void GameWindow::clientBytesWritten(qint64 bytes)
+{
+	qDebug() << "Udalo sie zapisac :" << bytes << "bajtow";
+}
+
+void GameWindow::clientReadyRead()
+{
+	while (socket->bytesAvailable() >= 8)
+	{
+		QByteArray bytes;
+		bytes = socket->read(156);
+		QDataStream out(&bytes, QIODevice::ReadOnly);
+		SerializedPlayer serialized_player;
+
+		out >> serialized_player;
+
+		if (serialized_player.magic != 777)
+			continue;
+
+		bool found = false;
+		for (auto enemy : enemies)
+			if (enemy->GetID() == serialized_player.id)
+			{
+				found = true;
+				enemy->Deserialize(serialized_player);
+				break;
+			}
+		if (found == false)
+		{
+			enemies.push_back(new Player(-1, MeshCollection::ModelTexture::Robot_Basic));
+			enemies.back()->Deserialize(serialized_player);
+			qDebug() << "NOWY CIOLEK" << enemies.back()->GetID();
+
+		}
+	}
 }

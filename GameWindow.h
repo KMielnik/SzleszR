@@ -10,8 +10,14 @@
 #include "Light.h"
 #include "Terrain.h"
 #include "Sphere.h"
+#include <QTcpSocket>
+#include <QTime>
+#include <QTcpServer>
 
 #define MAX_LIGHTS 10
+
+QDataStream& operator <<(QDataStream& out, const SerializedPlayer& data);
+QDataStream& operator >>(QDataStream& in, SerializedPlayer& data);
 
 class GameWindow : public QOpenGLWindow, protected QOpenGLFunctions
 {
@@ -19,7 +25,7 @@ class GameWindow : public QOpenGLWindow, protected QOpenGLFunctions
 
 public:
 	~GameWindow();
-	GameWindow() = default;
+	GameWindow(bool isServer);
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;
 	void paintGL() override;
@@ -30,6 +36,7 @@ public:
 protected:
 	void SetTransformations();
 	void MovePlayer();
+	void SendPlayers();
 	void keyPressEvent(QKeyEvent*) override;
 	void keyReleaseEvent(QKeyEvent*) override;
 	void mouseMoveEvent(QMouseEvent*) override;
@@ -50,4 +57,20 @@ private:
 
 	std::map<char, bool> pressedKeys;
 	QPointF mousePosition;
+	bool isServer;
+	QTcpSocket* socket;
+	QTcpServer* server;
+
+	int id = 0;
+	std::vector<QTcpSocket*> players;
+
+	QTime lanTimer;
+
+public slots:
+	void newClient();
+	void serverGotData();
+
+	void clientDisconnected();
+	void clientBytesWritten(qint64 bytes);
+	void clientReadyRead();
 };

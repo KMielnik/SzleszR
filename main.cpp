@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include "GameWindow.h"
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
@@ -9,8 +10,10 @@ int main(int argc, char *argv[])
 	format.setRenderableType(QSurfaceFormat::OpenGL);
 	format.setProfile(QSurfaceFormat::CoreProfile);
 	format.setVersion(3, 3);
+	bool isServer;
+	std::cin >> isServer;
 
-	GameWindow gameWindow;
+	GameWindow gameWindow(isServer);
 	gameWindow.setFormat(format);
 	gameWindow.resize(QSize(1500, 900));
 	gameWindow.show();

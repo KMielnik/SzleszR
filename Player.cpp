@@ -5,7 +5,7 @@ Player::~Player()
 {
 }
 
-Player::Player(MeshCollection::ModelTexture modelTexture) : Entity(MeshCollection::ModelType::Robot,modelTexture)
+Player::Player(int id, MeshCollection::ModelTexture modelTexture) : Entity(MeshCollection::ModelType::Robot,modelTexture), id(id)
 {
 	switch(modelTexture)
 	{
@@ -143,6 +143,43 @@ QVector3D Player::GetColor()
 		return HP * QVector3D(0.5, 0, 0) / 100;
 	return HP*color/100;
 
+}
+
+void Player::Serialize(SerializedPlayer* buffer) const
+{
+	buffer->id = id;
+	buffer->actualAttack = static_cast<int>(actualAttack);
+	buffer->HP = HP;
+	buffer->attackingFramesLeft = attackingFramesLeft;
+	buffer->color = color;
+	buffer->currentAnimation = currentAnimation;
+	buffer->force = force;
+	buffer->position = position;
+	buffer->previousAnimation = previousAnimation;
+	buffer->previousAnimationFramesLeft = previousAnimationFramesLeft;
+	buffer->rotation = rotation;
+	buffer->simpleMovement = simpleMovement;
+}
+
+void Player::Deserialize(SerializedPlayer buffer)
+{
+	id = buffer.id;
+	actualAttack = static_cast<AttackTypes>(buffer.actualAttack);
+	HP = buffer.HP;
+	attackingFramesLeft = buffer.attackingFramesLeft;
+	color = buffer.color;
+	currentAnimation = buffer.currentAnimation;
+	force = buffer.force;
+	position = buffer.position;
+	previousAnimation = buffer.previousAnimation;
+	previousAnimationFramesLeft = buffer.previousAnimationFramesLeft;
+	rotation = buffer.rotation;
+	simpleMovement = buffer.simpleMovement;
+}
+
+int Player::GetID() const
+{
+	return id;
 }
 
 void Player::Draw()

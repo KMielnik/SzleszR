@@ -3,6 +3,7 @@
 #include <QVector3D>
 #include <QQuaternion>
 #include "MeshCollection.h"
+#include "SerializedPlayer.h"
 
 class Player : public Entity
 {
@@ -15,7 +16,7 @@ public:
 		Super
 	};
 	~Player() override;
-	Player(MeshCollection::ModelTexture modelTexture);
+	Player(int id, MeshCollection::ModelTexture modelTexture);
 	void ShortAttack();
 	void LongAttack();
 	void SuperAttack();
@@ -25,11 +26,15 @@ public:
 	bool CheckCollision(Entity* entity) override;
 	QVector3D GetColor();
 
-	
+	void Serialize(SerializedPlayer* buffer) const;
+	void Deserialize(SerializedPlayer buffer);
+
+	int GetID() const;
 
 	void Draw() override;
 	
 private:
+	int id;
 	int HP = 100;
 	float attackRadius = 1.5f;
 
