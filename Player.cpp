@@ -112,7 +112,7 @@ bool Player::CheckCollision(Entity* entity)
 			{
 				HP -= 5;
 				enemy->stopAttack();
-				qDebug() << "HIT FOR: " << 5;
+				qDebug() << "Player "<< enemy->GetID() << " HIT " << GetID() << " FOR: " << 5;
 				attackCollisionOccured = true;
 			}
 		}
@@ -126,7 +126,7 @@ bool Player::CheckCollision(Entity* entity)
 			{
 				HP -= 15;
 				enemy->stopAttack();
-				qDebug() << "HIT FOR: " << 15;
+				qDebug() << "Player " << enemy->GetID() << " HIT " << GetID() << " FOR: " << 15;
 				attackCollisionOccured = true;
 			}
 		}

@@ -339,7 +339,7 @@ void GameWindow::clientDisconnected()
 
 void GameWindow::clientBytesWritten(qint64 bytes)
 {
-	qDebug() << "Udalo sie zapisac :" << bytes << "bajtow";
+	//qDebug() << "Udalo sie zapisac :" << bytes << "bajtow";
 }
 
 void GameWindow::clientReadyRead()
@@ -364,7 +364,7 @@ void GameWindow::clientReadyRead()
 				enemy->Deserialize(serialized_player);
 				break;
 			}
-		if (found == false)
+		if (!found)
 		{
 			enemies.push_back(new Player(-1, MeshCollection::ModelTexture::Robot_Basic));
 			enemies.back()->Deserialize(serialized_player);
