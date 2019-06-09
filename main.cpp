@@ -13,7 +13,13 @@ int main(int argc, char *argv[])
 	bool isServer;
 	std::cin >> isServer;
 
-	GameWindow gameWindow(isServer);
+	LANHandler* lanHandler;
+	if (isServer)
+		lanHandler = new LANHandler(12345);
+	else
+		lanHandler = new LANHandler("localhost", 12345);
+
+	GameWindow gameWindow(lanHandler);
 	gameWindow.setFormat(format);
 	gameWindow.resize(QSize(1500, 900));
 	gameWindow.show();

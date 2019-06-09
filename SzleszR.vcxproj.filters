@@ -74,9 +74,15 @@
     <ClCompile Include="AnimatedShader.cpp">
       <Filter>Source Files\Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="LANHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="GameWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="LANHandler.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

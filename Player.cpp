@@ -13,7 +13,7 @@ Player::Player(int id, MeshCollection::ModelTexture modelTexture) : Entity(MeshC
 		color = QVector3D(1, 0, 1);
 		break;
 	case MeshCollection::ModelTexture::Robot_Red:
-		color = QVector3D(0, 0, 1);
+		color = QVector3D(0.8, 1, 0.4);
 		break;
 	}
 }
