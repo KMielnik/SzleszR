@@ -1,5 +1,6 @@
 #pragma once
 #include <QOpenGLWindow>
+#include <QCloseEvent>
 #include <QOpenGLFunctions>
 #include <QKeyEvent>
 #include <QOpenGLTexture>

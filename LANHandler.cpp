@@ -18,7 +18,7 @@ LANHandler::LANHandler(std::string address, int port)
 
 	socket = new QTcpSocket(this);
 	socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
-	socket->setReadBufferSize(192);
+	socket->setReadBufferSize(156*2);
 
 	socket->connectToHost(address.c_str(), port);
 	socket->waitForConnected();
@@ -34,6 +34,10 @@ LANHandler::LANHandler(std::string address, int port)
 	connect(socket, SIGNAL(readyRead()), this, SLOT(clientReadyRead()));
 
 	qDebug() << "Client connected to server: " << socket->waitForConnected();
+}
+
+LANHandler::~LANHandler()
+{
 }
 
 void LANHandler::setPlayerAndEnemiesPointers(Player* player, std::vector<Player*>* enemies)
@@ -94,6 +98,7 @@ void LANHandler::newClient()
 {
 	players.push_back(server->nextPendingConnection());
 	players.back()->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+	players.back()->setReadBufferSize(156 * 2);
 
 	connect(players.back(), SIGNAL(readyRead()), this, SLOT(serverGotData()));
 
@@ -107,7 +112,7 @@ void LANHandler::newClient()
 void LANHandler::serverGotData()
 {
 	for (auto socket : players)
-		while(socket->bytesAvailable()>=8)
+		while(socket->bytesAvailable()>=156)
 		{
 			QByteArray bytes;
 			bytes = socket->read(156);
@@ -117,6 +122,8 @@ void LANHandler::serverGotData()
 			out >> serialized_player;
 
 			if (serialized_player.magic != 777)
+				continue;
+			if (serialized_player.HP <= 0)
 				continue;
 
 			bool found = false;
@@ -139,13 +146,11 @@ void LANHandler::serverGotData()
 }
 
 void LANHandler::clientDisconnected()
-{
-
-}
+{}
 
 void LANHandler::clientReadyRead()
 {
-	while (socket->bytesAvailable() > 0)
+	while (socket->bytesAvailable() >=8)
 	{
 		QByteArray bytes;
 		bytes = socket->read(156);
@@ -158,6 +163,8 @@ void LANHandler::clientReadyRead()
 			continue;
 
 		if (serialized_player.id == player->GetID())
+			continue;
+		if (serialized_player.HP <= 0)
 			continue;
 
 		bool found = false;
@@ -172,7 +179,7 @@ void LANHandler::clientReadyRead()
 		{
 			enemies->push_back(new Player(-1, MeshCollection::ModelTexture::Robot_Basic));
 			enemies->back()->Deserialize(serialized_player);
-			qDebug() << "NOWY CIOLEK" << enemies->back()->GetID();
+			qDebug() << "NOWY GRACZ o ID" << enemies->back()->GetID();
 
 		}
 	}

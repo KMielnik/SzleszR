@@ -28,7 +28,7 @@ struct Texture
 class MeshCollection
 {
 public:
-	enum class ModelType { Robot, Terrain, Sphere };
+	enum class ModelType { Robot, Terrain, Sphere, Rectangle };
 	enum class ModelTexture { Robot_Basic, Robot_Red, Terrain, Sphere };
 
 	void Initialize(QMatrix4x4* projectionMatrix, QMatrix4x4* cameraMatrix, std::vector<Light*>* lights);

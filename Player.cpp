@@ -1,8 +1,19 @@
 ﻿#include "Player.h"
 #include <QDebug>
+#include <corecrt_math_defines.h>
 
 Player::~Player()
 {
+}
+
+bool Player::IsAlive()
+{
+	return HP > 0;
+}
+
+void Player::Suicide()
+{
+	HP = 0;
 }
 
 Player::Player(int id, MeshCollection::ModelTexture modelTexture) : Entity(MeshCollection::ModelType::Robot,modelTexture), id(id)
@@ -93,6 +104,43 @@ void Player::PerformLogicStep()
 		previousAnimationFramesLeft--;
 }
 
+bool pointInTriangle(QPointF pt, QPointF v1, QPointF v2, QPointF v3)
+{
+	auto sign = [](QPointF p1, QPointF p2, QPointF p3) { return (p1.x() - p3.x()) * (p2.y() - p3.y()) - (p2.x() - p3.x()) * (p1.y() - p3.y()); };
+	float d1, d2, d3;
+	bool has_neg, has_pos;
+
+	d1 = sign(pt, v1, v2);
+	d2 = sign(pt, v2, v3);
+	d3 = sign(pt, v3, v1);
+
+	has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+	has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+	return !(has_neg && has_pos);
+}
+
+bool TriangleAttack(Player* enemy, Player* player, float range, float angle)
+{
+	float horizontalDistance = range * std::cos(M_PI / 180);
+	float theta = enemy->GetRotation().toEulerAngles().y() + angle;
+	float offsetX = horizontalDistance * std::sin(theta * M_PI / 180);
+	float offsetZ = horizontalDistance * std::cos(theta * M_PI / 180);
+
+	QPointF rightPoint(enemy->GetPosition().x() + offsetX, enemy->GetPosition().z() + offsetZ);
+
+	theta = enemy->GetRotation().toEulerAngles().y() - angle;
+	offsetX = horizontalDistance * std::sin(theta * M_PI / 180);
+	offsetZ = horizontalDistance * std::cos(theta * M_PI / 180);
+
+	QPointF leftPoint(enemy->GetPosition().x() + offsetX, enemy->GetPosition().z() + offsetZ);
+
+	QPointF enemyRoot(enemy->GetPosition().x(), enemy->GetPosition().z());
+
+	QPointF playerRoot(player->GetPosition().x(), player->GetPosition().z());
+	return pointInTriangle(playerRoot, enemyRoot, leftPoint, rightPoint);
+}
+
 bool Player::CheckCollision(Entity* entity)
 {
 	bool innerCollisionOccured = Entity::CheckCollision(entity);
@@ -105,24 +153,17 @@ bool Player::CheckCollision(Entity* entity)
 	{
 		if (enemy->isAttacking()==AttackTypes::Short)
 		{
-			QVector3D v = enemy->position - position;
-			float d = v.length();
-
-			if (d < (attackRadius + enemy->attackRadius))
+			if (TriangleAttack(enemy, this, 4, 45))
 			{
 				HP -= 5;
 				enemy->stopAttack();
-				qDebug() << "Player "<< enemy->GetID() << " HIT " << GetID() << " FOR: " << 5;
+				qDebug() << "Player " << enemy->GetID() << " HIT " << GetID() << " FOR: " << 5;
 				attackCollisionOccured = true;
 			}
 		}
-
 		if (enemy->isAttacking() == AttackTypes::Long)
 		{
-			QVector3D v = enemy->position - position;
-			float d = v.length();
-
-			if (d < ((attackRadius + enemy->attackRadius)*1.5))
+			if (TriangleAttack(enemy, this, 6, 45))
 			{
 				HP -= 15;
 				enemy->stopAttack();
@@ -130,6 +171,7 @@ bool Player::CheckCollision(Entity* entity)
 				attackCollisionOccured = true;
 			}
 		}
+		
 	}
 
 	return innerCollisionOccured || attackCollisionOccured;
@@ -211,7 +253,7 @@ void Player::stopAttack()
 		changeAnimation(PlayerAnimations::Cooldown);
 		break;
 	case AttackTypes::Long:
-		attackingFramesLeft = 150;
+		attackingFramesLeft = 80;
 		changeAnimation(PlayerAnimations::Cooldown);
 		break;
 	case AttackTypes::Super: break;

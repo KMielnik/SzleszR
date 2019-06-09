@@ -6,6 +6,7 @@ GameWindow::~GameWindow()
 {
 	makeCurrent();
 	teardownGL();
+	delete lanHandler;
 }
 
 GameWindow::GameWindow(LANHandler* lanHandler) : lanHandler(lanHandler)
@@ -54,29 +55,41 @@ void GameWindow::paintGL()
 	glEnable(GL_LIGHTING);
 	glShadeModel(GL_FLAT);
 
-	lanHandler->SendPlayers();
 
 	MovePlayer();
-
-	for(auto enemy : enemies)
+	if (player->IsAlive())
 	{
-		player->CheckCollision(enemy);
-		enemy->CheckCollision(player);
+		
+
+		for (auto enemy : enemies)
+		{
+			player->CheckCollision(enemy);
+			enemy->CheckCollision(player);
+		}
+
+		player->PerformLogicStep();
+		for (auto enemy : enemies)
+			enemy->PerformLogicStep();
 	}
 
-	player->PerformLogicStep();
-	for(auto enemy : enemies)
-		enemy->PerformLogicStep();
-	
+	for (int i = 0; i < enemies.size(); i++)
+		if (!enemies[i]->IsAlive())
+		{
+			delete enemies[i];
+			enemies.erase(enemies.begin()+i);
+		}
+
+	lanHandler->SendPlayers();
+
 	SetTransformations();
 
-	player->Draw();
+	if(player->IsAlive())
+		player->Draw();
 	for(auto enemy : enemies)
 		enemy->Draw();
 	terrain->Draw();
 	for(auto sphere : spheres)
 		sphere->Draw();
-
 
 	update();
 }
@@ -94,6 +107,12 @@ void GameWindow::SetTransformations()
 		allPlayers.push_back(enemy);
 
 	int lightNO = 0;
+
+	for (auto light : lights)
+		light->setColor(QVector3D(0, 0, 0));
+
+	for (auto sphere : spheres)
+		sphere->setColor(QVector3D(0, 0, 0));
 
 	//light enemies
 	for(auto player : allPlayers)

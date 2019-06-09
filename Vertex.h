@@ -7,6 +7,11 @@ struct Vertex
 	QVector3D Position;
 	QVector3D Normal;
 	QVector2D TexCoords;
+	Vertex(QVector3D Position, QVector2D TexCoords) : Position(Position),TexCoords(TexCoords)
+	{
+		
+	}
+	Vertex() {}
 };
 
 struct AnimatedVertex

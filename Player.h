@@ -16,6 +16,8 @@ public:
 		Super
 	};
 	~Player() override;
+	bool IsAlive();
+	void Suicide();
 	Player(int id, MeshCollection::ModelTexture modelTexture);
 	void ShortAttack();
 	void LongAttack();

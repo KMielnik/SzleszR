@@ -13,6 +13,7 @@ class LANHandler : QObject
 public:
 	LANHandler(int port);
 	LANHandler(std::string address,int port);
+	~LANHandler();
 	void setPlayerAndEnemiesPointers(Player* player, std::vector<Player*>* enemies);
 
 	int GetID();
