@@ -53,8 +53,8 @@ bool Entity::CheckCollision(Entity* entity)
 	{
 		v.normalize();
 		float energySum = force.length() + entity->force.length();
-		force = rotation* -v * energySum / 2;
-		entity->force = entity->rotation* v * energySum / 2;
+		force = rotation* -v * energySum / 1.5;
+		entity->force = entity->rotation* v * energySum / 1.5;
 		return true;
 	}
 

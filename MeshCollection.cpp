@@ -55,6 +55,26 @@ void MeshCollection::InitializeTexture(ModelTexture modelTexture)
 		InitializeRawTexture("Resources/textures/robot_red_", ".png", modelTexture);
 		break;
 
+	case ModelTexture::Robot_Yellow:
+		InitializeRawTexture("Resources/textures/robot_yellow_", ".png", modelTexture);
+		break;
+
+	case ModelTexture::Robot_Green:
+		InitializeRawTexture("Resources/textures/robot_green_", ".png", modelTexture);
+		break;
+
+	case ModelTexture::Robot_Blue:
+		InitializeRawTexture("Resources/textures/robot_blue_", ".png", modelTexture);
+		break;
+
+	case ModelTexture::Robot_Orange:
+		InitializeRawTexture("Resources/textures/robot_orange_", ".png", modelTexture);
+		break;
+
+	case ModelTexture::Robot_Purple:
+		InitializeRawTexture("Resources/textures/robot_purple_", ".png", modelTexture);
+		break;
+
 	case ModelTexture::Terrain:
 		InitializeRawTexture("Resources/textures/terrain_", ".png", modelTexture);
 		break;

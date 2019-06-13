@@ -13,7 +13,7 @@ public:
 		NoAttack,
 		Short,
 		Long,
-		Super
+		Block
 	};
 	~Player() override;
 	bool IsAlive();
@@ -21,7 +21,7 @@ public:
 	Player(int id, MeshCollection::ModelTexture modelTexture);
 	void ShortAttack();
 	void LongAttack();
-	void SuperAttack();
+	void Block();
 
 	AttackTypes isAttacking();
 	void PerformLogicStep() override;

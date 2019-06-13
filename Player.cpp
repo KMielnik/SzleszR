@@ -21,10 +21,28 @@ Player::Player(int id, MeshCollection::ModelTexture modelTexture) : Entity(MeshC
 	switch(modelTexture)
 	{
 	case MeshCollection::ModelTexture::Robot_Basic:
-		color = QVector3D(1, 0, 1);
+		color = QVector3D(1, 1, 1);
 		break;
 	case MeshCollection::ModelTexture::Robot_Red:
-		color = QVector3D(0.8, 1, 0.4);
+		color = QVector3D(1, 0, 0);
+		break;
+	case MeshCollection::ModelTexture::Robot_Orange: 
+		color = QVector3D(1, 0.5, 0); 
+		break;
+	case MeshCollection::ModelTexture::Robot_Yellow:
+		color = QVector3D(1, 1, 0); 
+		break;
+	case MeshCollection::ModelTexture::Robot_Green:
+		color = QVector3D(0, 1, 0.2); 
+		break;
+	case MeshCollection::ModelTexture::Robot_Blue:
+		color = QVector3D(1, 0.3, 1); 
+		break;
+	case MeshCollection::ModelTexture::Robot_Purple:
+		color = QVector3D(1, 0, 1); 
+		break;
+	default:
+		color = QVector3D(1, 1, 1);
 		break;
 	}
 }
@@ -49,8 +67,14 @@ void Player::LongAttack()
 	}
 }
 
-void Player::SuperAttack()
+void Player::Block()
 {
+	if (attackingFramesLeft <= 0)
+	{
+		attackingFramesLeft = 100;
+		actualAttack = AttackTypes::Block;
+		changeAnimation(PlayerAnimations::Cooldown);
+	}
 }
 
 Player::AttackTypes Player::isAttacking()
@@ -65,7 +89,9 @@ Player::AttackTypes Player::isAttacking()
 	case AttackTypes::Long: 
 		if (attackingFramesLeft < (longAttackFrames * 0.2) || attackingFramesLeft >(longAttackFrames * 0.8))
 			return AttackTypes::NoAttack;
-	case AttackTypes::Super: break;
+	case AttackTypes::Block:
+		return actualAttack;
+		break;
 	}
 	return actualAttack;
 }
@@ -155,9 +181,17 @@ bool Player::CheckCollision(Entity* entity)
 		{
 			if (TriangleAttack(enemy, this, 4, 45))
 			{
-				HP -= 5;
+				if (actualAttack == AttackTypes::Block)
+				{
+					HP -= 2;
+					qDebug() << "Player " << enemy->GetID() << " HIT BLOCKING" << GetID() << " FOR: " << 2;
+				}
+				else
+				{
+					HP -= 7;
+					qDebug() << "Player " << enemy->GetID() << " HIT" << GetID() << " FOR: " << 7;
+				}
 				enemy->stopAttack();
-				qDebug() << "Player " << enemy->GetID() << " HIT " << GetID() << " FOR: " << 5;
 				attackCollisionOccured = true;
 			}
 		}
@@ -165,9 +199,17 @@ bool Player::CheckCollision(Entity* entity)
 		{
 			if (TriangleAttack(enemy, this, 6, 45))
 			{
-				HP -= 15;
+				if (actualAttack == AttackTypes::Block)
+				{
+					HP -= 8;
+					qDebug() << "Player " << enemy->GetID() << " HIT BLOCKING" << GetID() << " FOR: " << 8;
+				}
+				else
+				{
+					HP -= 20;
+					qDebug() << "Player " << enemy->GetID() << " HIT" << GetID() << " FOR: " << 20;
+				}
 				enemy->stopAttack();
-				qDebug() << "Player " << enemy->GetID() << " HIT " << GetID() << " FOR: " << 15;
 				attackCollisionOccured = true;
 			}
 		}
@@ -256,7 +298,7 @@ void Player::stopAttack()
 		attackingFramesLeft = 80;
 		changeAnimation(PlayerAnimations::Cooldown);
 		break;
-	case AttackTypes::Super: break;
+	case AttackTypes::Block: break;
 	default: ;
 	}
 	actualAttack = AttackTypes::NoAttack;

@@ -24,10 +24,31 @@ void GameWindow::initializeGL()
 	meshCollection->Initialize(camera->getProjectionMatrixPointer(), camera->getCameraMatrixPointer(), &lights);
 
 
-	if(lanHandler->GetID()%2)
-		player = new Player(lanHandler->GetID(),MeshCollection::ModelTexture::Robot_Basic);
-	else
+	switch(lanHandler->GetID()%6)
+	{
+	case 0:
 		player = new Player(lanHandler->GetID(), MeshCollection::ModelTexture::Robot_Red);
+		break;
+	case 1:
+		player = new Player(lanHandler->GetID(), MeshCollection::ModelTexture::Robot_Orange);
+		break;
+	case 2:
+		player = new Player(lanHandler->GetID(), MeshCollection::ModelTexture::Robot_Yellow);
+		break;
+	case 3:
+		player = new Player(lanHandler->GetID(), MeshCollection::ModelTexture::Robot_Green);
+		break;
+	case 4:
+		player = new Player(lanHandler->GetID(), MeshCollection::ModelTexture::Robot_Blue);
+		break;
+	case 5:
+		player = new Player(lanHandler->GetID(), MeshCollection::ModelTexture::Robot_Purple);
+		break;
+
+	default:
+		player = new Player(lanHandler->GetID(), MeshCollection::ModelTexture::Robot_Basic);
+		break;
+	}
 
 	lanHandler->setPlayerAndEnemiesPointers(player, &enemies);
 
@@ -155,6 +176,8 @@ void GameWindow::keyPressEvent(QKeyEvent* e)
 	pressedKeys[e->key()] = true;
 	if (e->key() == Qt::Key_Space)
 		player->LongAttack();
+	if (e->key() == Qt::Key_Shift)
+		player->Block();
 }
 
 void GameWindow::keyReleaseEvent(QKeyEvent* e)
