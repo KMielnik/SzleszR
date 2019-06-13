@@ -127,6 +127,15 @@ void GameWindow::SetTransformations()
 	for (auto enemy : enemies)
 		allPlayers.push_back(enemy);
 
+	if (previousPlayers == 0)
+		if (enemies.empty() == false)
+			previousPlayers = true;
+	if(enemies.empty() && previousPlayers == true)
+	{
+		qDebug() << "YOU WON";
+		previousPlayers = false;
+	}
+
 	int lightNO = 0;
 
 	for (auto light : lights)

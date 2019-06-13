@@ -28,7 +28,7 @@ protected:
 	QVector3D position;
 	float innerRadius = 0.5f;
 	float gravitation = 0.5f;
-	float maxSpeed = 0.08f;
+	float maxSpeed = 0.07f;
 	QVector2D simpleMovement;
 	QVector3D force;
 	QQuaternion rotation;

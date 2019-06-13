@@ -55,5 +55,5 @@ private:
 	QPointF mousePosition;
 
 
-
+	bool previousPlayers = 0;
 };

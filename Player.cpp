@@ -222,9 +222,11 @@ bool Player::CheckCollision(Entity* entity)
 QVector3D Player::GetColor()
 {
 	if (isAttacking() == AttackTypes::Short)
-		return HP * QVector3D(0, 1, 0) / 100;
+		return HP * color / 60;
 	if (isAttacking() == AttackTypes::Long)
-		return HP * QVector3D(0.5, 0, 0) / 100;
+		return HP * color / 35;
+	if (isAttacking() == AttackTypes::Block)
+		return HP * QVector3D(1, 1, 1)/100;
 	return HP*color/100;
 
 }

@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	std::cout << "Ciezki atak: Spacja" << std::endl;
 	std::cout << "Block(zmienjsza otrzymana obrazenia): Shift" << std::endl;
 	std::cout << "Kolor i moc twojego swiatla sygnalizuje pozostale zycie." << std::endl;
-	std::cout << "Gdy umrzesz, pozostanie po tobie jedynie bezbarwna kula." << std::endl;
+	std::cout << "Gdy przegrasz, pozostanie po tobie jedynie bezbarwna kula." << std::endl;
 	std::cout << std::endl << std::endl;
 
 	std::cout << "Czy chcesz być serwerem? (1/0) - (prawda/falsz): ";
